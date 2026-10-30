@@ -183,6 +183,9 @@
   }
 
   VC.simulator = {
+    // Versión síncrona para generar datos de ejemplo (panel del agente)
+    offers: buildOffers,
+
     search: function (params) {
       var legs = params.legs.map(function (leg) {
         return { from: leg.from, to: leg.to, date: leg.date, offers: buildOffers(leg, params.pax, params.cabin) };

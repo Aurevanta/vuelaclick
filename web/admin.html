@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel de agencia — VuelaClic</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0A2463">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="adm-body">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plane" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></g></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></symbol>
+</svg>
+
+<header class="adm-head">
+  <div class="wrap adm-head-row">
+    <a class="logo" href="index.html" aria-label="Volver a la web de VuelaClic">
+      <span class="logo-word">Vuela<b>Clic</b></span>
+    </a>
+    <span class="adm-tag">Panel de agencia</span>
+    <nav class="adm-nav" aria-label="Secciones del panel">
+      <a href="#resumen">Resumen</a>
+      <a href="#margen">Margen</a>
+      <a href="#liquidacion">GrupoVDT</a>
+      <a href="#reservas">Reservas</a>
+    </nav>
+    <div class="adm-user">
+      <span class="agent-avatar small" aria-hidden="true">JG</span>
+      <span><strong>Juan Gómez</strong><small>Agente de viajes</small></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap adm">
+  <section id="resumen" aria-labelledby="sum-title">
+    <div class="adm-title-row">
+      <h1 id="sum-title">Buenos días, Juan</h1>
+      <p id="sum-date"></p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="adm-grid">
+    <article class="card chart-card" aria-labelledby="chart-title">
+      <header class="card-head">
+        <h2 id="chart-title">Ventas de los últimos 14 días</h2>
+        <ul class="chart-legend"><li><i class="net"></i>Coste GrupoVDT</li><li><i class="margin"></i>Tu margen</li></ul>
+      </header>
+      <div class="chart" id="chart" role="img"></div>
+    </article>
+
+    <article class="card margin-card" id="margen" aria-labelledby="margin-title">
+      <header class="card-head"><h2 id="margin-title">Tu margen sobre la tarifa</h2></header>
+      <p class="card-sub">GrupoVDT te vende a precio neto. Esto es lo que sumas tú en la web.</p>
+      <output class="margin-value" id="margin-out">7 %</output>
+      <input type="range" id="margin-range" min="0" max="20" step="0.5" value="7" aria-label="Margen en porcentaje">
+      <div class="margin-example" id="margin-example"></div>
+      <p class="fine">Se aplica al momento a las búsquedas nuevas de la web (en esta demo, en este navegador).</p>
+    </article>
+  </section>
+
+  <section class="card settle" id="liquidacion" aria-labelledby="settle-title">
+    <div>
+      <h2 id="settle-title">Liquidación con GrupoVDT</h2>
+      <p id="settle-text"></p>
+      <div class="credit" aria-hidden="true"><span id="credit-bar"></span></div>
+      <p class="fine" id="credit-text"></p>
+    </div>
+    <button type="button" class="btn btn-sun" id="settle-btn">Pagar a GrupoVDT</button>
+  </section>
+
+  <section class="card bookings" id="reservas" aria-labelledby="bk-title">
+    <header class="card-head bk-head">
+      <h2 id="bk-title">Reservas</h2>
+      <div class="bk-tools">
+        <div class="bk-tabs" role="tablist" id="bk-tabs">
+          <button type="button" role="tab" data-f="all" aria-selected="true">Todas</button>
+          <button type="button" role="tab" data-f="awaiting" aria-selected="false">Por cobrar</button>
+          <button type="button" role="tab" data-f="fin" aria-selected="false">Financiadas</button>
+          <button type="button" role="tab" data-f="web" aria-selected="false">Hechas en la web</button>
+        </div>
+        <label class="bk-search"><svg class="ic"><use href="#i-search"/></svg><span class="sr-only">Buscar reserva</span>
+          <input type="search" id="bk-q" placeholder="Nombre o localizador"></label>
+      </div>
+    </header>
+    <div class="table-wrap">
+      <table class="bk-table">
+        <thead><tr>
+          <th scope="col">Localizador</th><th scope="col">Cliente</th><th scope="col">Viaje</th><th scope="col">Pago</th>
+          <th scope="col">Estado</th><th scope="col" class="num">Venta</th><th scope="col" class="num">Neto VDT</th><th scope="col" class="num">Margen</th><th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr></thead>
+        <tbody id="bk-body"></tbody>
+      </table>
+    </div>
+    <p class="empty-row" id="bk-empty" hidden>No hay reservas con ese filtro.</p>
+  </section>
+
+  <p class="adm-foot fine">Demo con datos simulados. En producción estos datos vendrían del backend que conecta con GrupoVDT, la pasarela de pago y Fliinow.
+    <button type="button" class="link" id="reset-demo">Reiniciar demo</button></p>
+</main>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="js/data.js"></script>
+<script src="js/simulator.js"></script>
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

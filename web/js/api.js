@@ -14,6 +14,35 @@
     apiBase: '/api'
   };
 
+  // Almacenamiento local de la demo: margen y reservas hechas en este navegador.
+  // En producción todo esto vive en el backend.
+  VC.store = {
+    get: function (key, fallback) {
+      try {
+        var raw = localStorage.getItem('vc.' + key);
+        return raw === null ? fallback : JSON.parse(raw);
+      } catch (e) { return fallback; }
+    },
+    set: function (key, value) {
+      try { localStorage.setItem('vc.' + key, JSON.stringify(value)); } catch (e) { /* modo privado */ }
+    }
+  };
+
+  // GrupoVDT vende a tarifa neta; VuelaClic añade su margen en porcentaje.
+  VC.pricing = {
+    get markup() { return VC.store.get('markup', 7); },
+    set markup(v) { VC.store.set('markup', v); },
+    sell: function (net) { return Math.round(net * (1 + this.markup / 100)); }
+  };
+
+  function withMargin(offer) {
+    offer.net = offer.price;
+    offer.netPerAdult = offer.pricePerAdult;
+    offer.price = VC.pricing.sell(offer.price);
+    offer.pricePerAdult = VC.pricing.sell(offer.pricePerAdult);
+    return offer;
+  }
+
   function post(path, body) {
     return fetch(VC.CONFIG.apiBase + path, {
       method: 'POST',
@@ -28,16 +57,34 @@
   var providers = {
     mock: {
       label: 'Simulador de demostración',
-      search: VC.simulator.search,
-      cheapestByDate: function (leg, pax, cabin, dates) {
-        return Promise.resolve(VC.simulator.cheapestByDate(leg, pax, cabin, dates));
+      search: function (params) {
+        return VC.simulator.search(params).then(function (res) {
+          res.legs.forEach(function (leg) { leg.offers.forEach(withMargin); });
+          return res;
+        });
       },
-      book: VC.simulator.book
+      cheapestByDate: function (leg, pax, cabin, dates) {
+        return Promise.resolve(VC.simulator.cheapestByDate(leg, pax, cabin, dates).map(function (r) {
+          return { date: r.date, price: r.price === null ? null : VC.pricing.sell(r.price) };
+        }));
+      },
+      book: function (booking) {
+        return VC.simulator.book(booking).then(function (res) {
+          var list = VC.store.get('bookings', []);
+          list.unshift(Object.assign({}, booking, {
+            locator: res.locator,
+            createdAt: new Date().toISOString(),
+            status: booking.method === 'transfer' ? 'awaiting' : 'issued'
+          }));
+          VC.store.set('bookings', list.slice(0, 50));
+          return res;
+        });
+      }
     },
 
     // Pendiente: GrupoVDT no publica su API. Al recibir la documentación,
-    // el backend expondrá estos tres endpoints y traducirá sus respuestas
-    // al mismo formato de oferta que genera el simulador.
+    // el backend expondrá estos tres endpoints, aplicará el margen y traducirá
+    // sus respuestas al mismo formato de oferta que genera el simulador.
     vdt: {
       label: 'GrupoVDT',
       search: function (params) { return post('/flights/search', params); },

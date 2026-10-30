@@ -73,7 +73,7 @@
   function boardEntry(code) {
     var ap = VC.airport(code);
     var opts = VC.simulator.cheapestByDate({ from: 'MAD', to: code }, { adt: 1, chd: 0, inf: 0 }, 'Y', [addDays(today(), 40)]);
-    var price = opts[0].price;
+    var price = VC.pricing.sell(opts[0].price);
     var carriers = ['IB', 'UX', 'PU', 'LA', 'AV', 'CM'];
     var c = carriers[(code.charCodeAt(0) + code.charCodeAt(2)) % carriers.length];
     var t = 360 + ((code.charCodeAt(1) * 37) % 960);
@@ -431,21 +431,33 @@
     'Calculando equipaje y precio final…'
   ];
 
-  function newFilters() { return { stops: [], times: [], airlines: [], bags: false }; }
+  // prefs: preferencias que se mantienen en todos los tramos (p. ej. «directo» dicho al asistente)
+  function newFilters(prefs) {
+    return { stops: prefs && prefs.direct ? [0] : [], times: [], airlines: [], bags: !!(prefs && prefs.bags) };
+  }
 
-  function runSearch(keepLeg) {
+  function routePath(legs) {
+    if (form.trip === 'rt') return [legs[0].from, legs[0].to];
+    return [legs[0].from].concat(legs.map(function (l) { return l.to; }));
+  }
+
+  function runSearch(keepLeg, prefs) {
     var legs = legsForSearch();
     var params = { legs: legs, pax: Object.assign({}, form.pax), cabin: form.cabin };
     var prev = search;
+    prefs = prefs || (keepLeg && prev ? prev.prefs : {});
     search = {
       params: params,
       result: null,
       active: keepLeg && prev ? Math.min(prev.active, legs.length - 1) : 0,
       selected: legs.map(function () { return null; }),
       sort: 'best',
-      filters: newFilters(),
+      prefs: prefs,
+      budget: prefs.budget || null,
+      filters: newFilters(prefs),
       open: {}
     };
+    if (VC.routeGlobe) VC.routeGlobe.search(routePath(legs));
     var token = search;
 
     var section = $('#resultados');
@@ -470,6 +482,7 @@
       renderLegTabs();
       renderFilters();
       renderOffers();
+      showLegOnGlobe();
     }).catch(function (err) {
       clearInterval(cycle);
       $('#loading').hidden = true;
@@ -539,11 +552,41 @@
     return search && search.result ? search.result.legs[search.active].offers : [];
   }
 
+  function offerPath(o) { return o.segments.map(function (s) { return s.from; }).concat(o.segments[o.segments.length - 1].to); }
+
+  function offerNote(o) {
+    return VC.AIRLINES[o.airline].name + ', ' + (o.stops ? plural(o.stops, 'escala', 'escalas') + ' en ' + o.via.map(city).join(' y ') : 'directo') + ', ' + dur(o.duration);
+  }
+
+  // Globo: la ruta del tramo activo, o el vuelo elegido si ya hay uno
+  function showLegOnGlobe() {
+    if (!VC.routeGlobe || !search || !search.result) return;
+    var sel = search.selected[search.active];
+    if (sel) { VC.routeGlobe.show(offerPath(sel), offerNote(sel)); return; }
+    var leg = search.params.legs[search.active];
+    var n = applyFilters(currentOffers()).length;
+    VC.routeGlobe.show([leg.from, leg.to], plural(n, 'vuelo encontrado', 'vuelos encontrados'));
+  }
+
+  // Presupuesto por persona para el viaje completo: lo que queda tras los demás tramos
+  function budgetLimit() {
+    if (!search.budget || !search.result) return Infinity;
+    var other = 0;
+    search.result.legs.forEach(function (leg, i) {
+      if (i === search.active) return;
+      var sel = search.selected[i];
+      other += sel ? sel.pricePerAdult : Math.min.apply(null, leg.offers.map(function (o) { return o.pricePerAdult; }));
+    });
+    return search.budget - other;
+  }
+
   function bucket(min) { return Math.floor((((min % 1440) + 1440) % 1440) / 360); }
 
   function applyFilters(offers) {
     var f = search.filters;
+    var limit = budgetLimit();
     return offers.filter(function (o) {
+      if (o.pricePerAdult > limit) return false;
       if (f.stops.length && f.stops.indexOf(Math.min(o.stops, 2)) < 0) return false;
       if (f.times.length && f.times.indexOf(bucket(o.depMin)) < 0) return false;
       if (f.airlines.length && f.airlines.indexOf(o.airline) < 0) return false;
@@ -572,6 +615,9 @@
   function renderFilters() {
     var offers = currentOffers();
     var f = search.filters;
+    $('#f-budget').innerHTML = search.budget
+      ? '<span class="budget-chip">Hasta ' + money(search.budget) + ' por persona<button type="button" id="budget-clear" aria-label="Quitar presupuesto">' + icon('close') + '</button></span>'
+      : '';
     var stopNames = ['Directo', '1 escala', '2 escalas'];
     var stops = [0, 1, 2].map(function (s) {
       var group = offers.filter(function (o) { return Math.min(o.stops, 2) === s; });
@@ -613,11 +659,20 @@
     function clear() {
       if (!search) return;
       search.filters = newFilters();
+      search.prefs = {};
+      search.budget = null;
       renderFilters();
       renderOffers();
     }
     $('#clear-filters').addEventListener('click', clear);
     $('#empty-clear').addEventListener('click', clear);
+    $('#filters').addEventListener('click', function (e) {
+      if (!e.target.closest('#budget-clear') || !search) return;
+      search.budget = null;
+      search.prefs.budget = null;
+      renderFilters();
+      renderOffers();
+    });
     $('#filters-toggle').addEventListener('click', function () {
       var open = $('#filters').classList.toggle('open');
       this.setAttribute('aria-expanded', String(open));
@@ -679,8 +734,16 @@
 
     $('#empty').hidden = sorted.length > 0;
     if (!sorted.length) {
-      $('#empty h3').textContent = 'No hay vuelos con estos filtros';
-      $('#empty p').textContent = 'Prueba a quitar algún filtro o a cambiar la fecha en el calendario de arriba.';
+      var overBudget = search.budget && all.length && applyFilters(all).length === 0 &&
+        all.every(function (o) { return o.pricePerAdult > budgetLimit(); });
+      if (overBudget) {
+        var cheapestPP = Math.min.apply(null, all.map(function (o) { return o.pricePerAdult; }));
+        $('#empty h3').textContent = 'Ningún vuelo entra en ' + money(search.budget) + ' por persona';
+        $('#empty p').textContent = 'El más barato de este tramo cuesta ' + money(cheapestPP) + ' por persona. Prueba otras fechas en el calendario o quita el presupuesto.';
+      } else {
+        $('#empty h3').textContent = 'No hay vuelos con estos filtros';
+        $('#empty p').textContent = 'Prueba a quitar algún filtro o a cambiar la fecha en el calendario de arriba.';
+      }
     }
     var selected = search.selected[search.active];
     var pax = search.params.pax;
@@ -752,6 +815,19 @@
       }
     });
 
+    var hovered = null;
+    $('#offer-list').addEventListener('mouseover', function (e) {
+      var li = e.target.closest('.offer');
+      if (!li || li.dataset.id === hovered || !VC.routeGlobe) return;
+      hovered = li.dataset.id;
+      var o = currentOffers().find(function (x) { return x.id === hovered; });
+      if (o) VC.routeGlobe.show(offerPath(o), offerNote(o));
+    });
+    $('#offer-list').addEventListener('mouseleave', function () {
+      hovered = null;
+      showLegOnGlobe();
+    });
+
     $('#leg-tabs').addEventListener('click', function (e) {
       var b = e.target.closest('[data-leg]');
       if (b) switchLeg(+b.dataset.leg);
@@ -784,11 +860,12 @@
 
   function switchLeg(i) {
     search.active = i;
-    search.filters = newFilters();
+    search.filters = newFilters(search.prefs);
     renderLegTabs();
     renderFareCal();
     renderFilters();
     renderOffers();
+    showLegOnGlobe();
     var top = $('#leg-tabs').getBoundingClientRect().top;
     if (top < 60 || top > window.innerHeight * 0.6) {
       $('#leg-tabs').scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
@@ -824,7 +901,10 @@
       legs: search.params.legs,
       pax: search.params.pax,
       cabin: search.params.cabin,
-      total: search.selected.reduce(function (s, o) { return s + o.price; }, 0),
+      base: search.selected.reduce(function (s, o) { return s + o.price; }, 0),
+      seats: {},
+      seatUi: {},
+      get total() { return this.base + VC.seats.total(this); },
       travellers: [],
       contact: { email: '', phone: '' },
       method: 'card',
@@ -861,10 +941,14 @@
   function priceLines() {
     var p = booking.pax;
     var perAdult = booking.offers.reduce(function (s, o) { return s + o.pricePerAdult; }, 0);
-    var lines = '<div><span>' + plural(p.adt, 'adulto', 'adultos') + '</span><span>' + money(perAdult * p.adt) + '</span></div>';
-    if (p.chd) lines += '<div><span>' + plural(p.chd, 'niño', 'niños') + '</span><span>' + money(Math.round(perAdult * 0.75) * p.chd) + '</span></div>';
-    if (p.inf) lines += '<div><span>' + plural(p.inf, 'bebé', 'bebés') + '</span><span>' + money(Math.round(perAdult * 0.1) * p.inf) + '</span></div>';
+    var chd = Math.round(perAdult * 0.75) * p.chd, inf = Math.round(perAdult * 0.1) * p.inf;
+    // los adultos se llevan el resto para que el desglose sume exactamente el total
+    var lines = '<div><span>' + plural(p.adt, 'adulto', 'adultos') + '</span><span>' + money(booking.base - chd - inf) + '</span></div>';
+    if (p.chd) lines += '<div><span>' + plural(p.chd, 'niño', 'niños') + '</span><span>' + money(chd) + '</span></div>';
+    if (p.inf) lines += '<div><span>' + plural(p.inf, 'bebé', 'bebés') + '</span><span>' + money(inf) + '</span></div>';
     lines += '<div><span>Tasas de aeropuerto</span><span>Incluidas</span></div>';
+    var seats = VC.seats.total(booking);
+    if (seats) lines += '<div><span>Asientos elegidos</span><span>' + money(seats) + '</span></div>';
     lines += '<div class="total"><span>Total</span><span>' + money(booking.total) + '</span></div>';
     return '<div class="price-lines">' + lines + '</div>';
   }
@@ -898,11 +982,13 @@
         '</div></div>' +
         '<p class="form-error" id="pax-error" hidden>Completa los campos marcados en rojo.</p>' +
         '<div class="booking-actions"><button type="button" class="back-btn" data-back>' + icon('arrow') + 'Volver</button>' +
-        '<button type="submit" class="btn btn-sun">Ir al pago</button></div>' +
+        '<button type="submit" class="btn btn-sun">Elegir asientos</button></div>' +
         '</div></form>';
     } else if (s === 2) {
+      VC.seats.render(body, booking, booking.seatUi);
+    } else if (s === 3) {
       var fin = booking.total >= 300;
-      body.innerHTML = '<h3>¿Cómo quieres pagar?</h3>' +
+      body.innerHTML = '<h3>¿Cómo quieres pagar?</h3>' + priceLines() +
         '<div class="pay-methods" role="radiogroup" aria-label="Forma de pago">' +
           payOption('card', 'card', 'Tarjeta', 'Visa, Mastercard o Amex') +
           payOption('bizum', 'phone', 'Bizum', 'Al momento desde tu móvil') +
@@ -966,7 +1052,27 @@
     var steps = $$('#flow li');
     var wait = reducedMotion() ? 50 : 850;
     var i = 0;
-    var bookingPromise = VC.api.book({ offers: booking.offers.map(function (o) { return o.id; }), travellers: booking.travellers, contact: booking.contact, method: booking.method });
+    var seatsTotal = VC.seats.total(booking);
+    var net = booking.offers.reduce(function (s, o) { return s + o.net; }, 0) + seatsTotal;
+    var bookingPromise = VC.api.book({
+      offers: booking.offers.map(function (o) { return o.id; }),
+      legs: booking.offers.map(function (o, i) {
+        var l = booking.legs[i];
+        return { from: l.from, to: l.to, date: l.date, airline: o.airline, number: o.segments[0].number, dep: clock(o.depMin), stops: o.stops };
+      }),
+      lead: (booking.travellers[0].name + ' ' + booking.travellers[0].surname).trim() || 'Viajero',
+      travellers: booking.travellers,
+      pax: booking.pax,
+      cabin: booking.cabin,
+      contact: booking.contact,
+      method: booking.method,
+      plan: booking.method === 'fin' ? booking.plan : null,
+      total: booking.total,
+      seatsTotal: seatsTotal,
+      net: net,
+      margin: booking.total - net,
+      source: 'web'
+    });
     function next() {
       if (!$('#booking').open) return;
       if (i > 0) { steps[i - 1].classList.remove('busy'); steps[i - 1].classList.add('on'); }
@@ -983,13 +1089,51 @@
     next();
   }
 
+  function qrSvg(text) {
+    if (!window.qrcode) return '';
+    var q = window.qrcode(0, 'M');
+    q.addData(text);
+    q.make();
+    return q.createSvgTag({ cellSize: 3, margin: 0, scalable: true });
+  }
+
+  function shareText(res) {
+    var lines = ['Mi reserva con VuelaClic', 'Localizador: ' + res.locator];
+    booking.offers.forEach(function (o, i) {
+      var l = booking.legs[i];
+      lines.push(shortDay(l.date) + ', ' + clock(o.depMin) + ': ' + city(l.from) + ' → ' + city(l.to) + ' (' + o.segments[0].number + ')');
+    });
+    return lines.join('\n');
+  }
+
+  // Archivo .ics con un evento por tramo, para añadir el viaje al calendario del móvil
+  function calendarFile(res) {
+    function stamp(dateIso, min) {
+      var m = ((min % 1440) + 1440) % 1440;
+      return dateIso.replace(/-/g, '') + 'T' + String(Math.floor(m / 60)).padStart(2, '0') + String(m % 60).padStart(2, '0') + '00';
+    }
+    var ev = booking.offers.map(function (o, i) {
+      var l = booking.legs[i];
+      var end = addDays(l.date, Math.floor(o.arrMin / 1440));
+      return ['BEGIN:VEVENT', 'UID:' + res.locator + '-' + i + '@vuelaclic.demo', 'DTSTAMP:' + stamp(today(), 0),
+        'DTSTART:' + stamp(l.date, o.depMin), 'DTEND:' + stamp(end, o.arrMin),
+        'SUMMARY:Vuelo ' + o.segments[0].number + ' ' + l.from + '-' + l.to,
+        'DESCRIPTION:Localizador ' + res.locator + '. Reserva VuelaClic.', 'END:VEVENT'].join('\r\n');
+    });
+    var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//VuelaClic//Demo//ES'].concat(ev, ['END:VCALENDAR']).join('\r\n');
+    return URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+  }
+
   function showTicket(res) {
-    booking.step = 3;
+    booking.step = 4;
     stepsState();
     $$('#booking-steps li').forEach(function (li) { li.className = 'done'; });
     var first = booking.legs[0], o = booking.offers[0];
     var lastLeg = booking.legs[form.trip === 'rt' ? 0 : booking.legs.length - 1];
     var t = booking.travellers[0];
+    var seat = VC.seats.firstSeat(booking);
+    var qr = qrSvg(['VUELACLIC', res.locator, first.from + '-' + first.to, first.date, o.segments[0].number.replace(' ', ''), seat || '---',
+      (t.surname + '/' + t.name).toUpperCase()].join('|'));
     $('#booking-title').textContent = booking.method === 'transfer' ? 'Plaza bloqueada' : '¡Buen viaje!';
     $('#booking-body h3').textContent = booking.method === 'transfer' ? 'Te esperamos con la transferencia' : 'Tu billete está emitido';
     $('#ticket-slot').innerHTML = '<div class="ticket" role="group" aria-label="Billete">' +
@@ -1003,9 +1147,14 @@
       '<div class="ticket-bottom">' +
         '<div><small>Salida</small><strong>' + shortDay(first.date) + ', ' + clock(o.depMin) + '</strong></div>' +
         '<div><small>Vuelo</small><strong>' + o.segments[0].number + '</strong></div>' +
-        '<div><small>Clase</small><strong>' + VC.CABINS[booking.cabin].label + '</strong></div>' +
+        '<div><small>Asiento</small><strong>' + (seat || 'Al facturar') + '</strong></div>' +
         '<div><small>Pagado</small><strong>' + (booking.method === 'fin' ? '100 €' : booking.method === 'transfer' ? 'Pendiente' : money(booking.total)) + '</strong></div>' +
+        (qr && booking.method !== 'transfer' ? '<div class="ticket-qr" aria-label="Código QR de la tarjeta de embarque">' + qr + '</div>' : '') +
       '</div></div>' +
+      '<div class="ticket-share">' +
+        '<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(shareText(res)) + '">' + icon('whatsapp') + 'Enviar por WhatsApp</a>' +
+        '<a class="btn btn-ghost" download="vuelaclic-' + res.locator + '.ics" href="' + calendarFile(res) + '">' + icon('cal') + 'Añadir al calendario</a>' +
+      '</div>' +
       '<div class="booking-actions"><span class="fine">Proveedor: ' + esc(VC.api.provider.label) + '</span>' +
       '<button type="button" class="btn btn-sun" data-done>Hacer otra búsqueda</button></div>';
   }
@@ -1016,13 +1165,15 @@
     dlg.addEventListener('close', function () { $('#booking-title').textContent = 'Tu reserva'; });
     dlg.addEventListener('click', function (e) {
       if (e.target === dlg) { dlg.close(); return; }
-      if (e.target.closest('[data-next]')) { booking.step = 1; renderBooking(); }
+      if (booking.step === 2 && VC.seats.click(e, booking, booking.seatUi)) { renderBooking(); return; }
+      if (e.target.closest('[data-next]')) { booking.step++; renderBooking(); }
       if (e.target.closest('[data-back]')) { booking.step--; renderBooking(); }
+      if (e.target.closest('[data-skip-seats]')) { booking.seats = {}; booking.step = 3; renderBooking(); }
       if (e.target.closest('[data-fill]')) fillDemo();
       if (e.target.closest('[data-pay]')) {
         var bp = $('#bizum-phone');
         if (bp) booking.contact.phone = bp.value;
-        booking.step = 3;
+        booking.step = 4;
         renderBooking();
       }
       if (e.target.closest('[data-done]')) {
@@ -1137,6 +1288,30 @@
     }).join('');
     $('#marquee').innerHTML = pills + pills;
   }
+
+  // ---------- API para el asistente y el explorador ----------
+  VC.app = {
+    searchTrip: function (o) {
+      form.trip = o.trip || 'rt';
+      $('input[name=trip][value=' + form.trip + ']').checked = true;
+      form.legs = [{ from: o.from, to: o.to, date: o.date, ret: o.ret || addDays(o.date, 14) }];
+      if (o.pax) form.pax = Object.assign({}, o.pax);
+      if (o.cabin) {
+        form.cabin = o.cabin;
+        $('input[name=cabin][value=' + o.cabin + ']').checked = true;
+      }
+      renderLegs();
+      renderPax();
+      var prefs = { budget: o.budget || null, direct: !!o.direct, bags: !!o.bags };
+      if (!o.flash || reducedMotion()) { runSearch(false, prefs); return; }
+      // el buscador se rellena a la vista antes de saltar a los resultados
+      var card = $('#search-form');
+      card.classList.remove('flash');
+      void card.offsetWidth;
+      card.classList.add('flash');
+      setTimeout(function () { runSearch(false, prefs); }, 900);
+    }
+  };
 
   // ---------- Arranque ----------
   renderLegs();
