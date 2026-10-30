@@ -432,7 +432,8 @@ a { color: inherit; }
   position: relative; display: block; aspect-ratio: 4 / 5; border-radius: 22px; overflow: hidden; border: 0; padding: 0;
   background: var(--night); color: #fff; text-align: left; isolation: isolate;
 }
-.dest:nth-child(1), .dest:nth-child(6) { grid-column: span 2; aspect-ratio: auto; }
+/* tres tarjetas dobles: con 9 destinos las filas quedan completas en 4 y en 2 columnas */
+.dest:nth-child(1), .dest:nth-child(6), .dest:nth-child(9) { grid-column: span 2; aspect-ratio: auto; }
 .dest img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform .6s var(--ease-out); }
 .dest::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(6, 17, 43, 0) 35%, rgba(6, 17, 43, .85) 100%); }
 .dest:hover img { transform: scale(1.06); }
@@ -615,7 +616,7 @@ body.has-selection .toast { bottom: 108px; }
   .filters.open { display: block; }
   .filters-toggle { display: inline-flex; margin-bottom: 14px; }
   .dest-grid { grid-template-columns: repeat(2, 1fr); }
-  .dest:nth-child(1), .dest:nth-child(6) { grid-column: span 2; aspect-ratio: 16 / 9; }
+  .dest:nth-child(1), .dest:nth-child(6), .dest:nth-child(9) { grid-column: span 2; aspect-ratio: 16 / 9; }
   .finance-grid, .contact-card { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {

@@ -69,7 +69,8 @@ VC.FEATURED = [
   { to: 'ASU', from: 'MAD', img: 'img/asuncion.jpg', tag: '1 escala' },
   { to: 'VVI', from: 'MAD', img: 'img/santa-cruz.jpg', tag: 'Bolivia' },
   { to: 'TGU', from: 'MAD', img: 'img/tegucigalpa.jpg', tag: 'Honduras' },
-  { to: 'SJO', from: 'MAD', img: 'img/san-jose.jpg', tag: 'Costa Rica' }
+  { to: 'SJO', from: 'MAD', img: 'img/san-jose.jpg', tag: 'Costa Rica' },
+  { to: 'CUZ', from: 'MAD', img: 'img/cusco.jpg', tag: 'Machu Picchu' }
 ];
 
 VC.airport = function (code) {

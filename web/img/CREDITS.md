@@ -13,3 +13,4 @@ Las licencias CC BY y CC BY-SA exigen mantener la atribución si la web se publi
 | santa-cruz.jpg | [Catedral de Santa Cruz - Bolivia](https://commons.wikimedia.org/wiki/File:Catedral_de_Santa_Cruz_-_Bolivia.jpg) | CC BY-SA 4.0 |
 | tegucigalpa.jpg | [Skyline of the Great Tegucigalpa, Honduras](https://commons.wikimedia.org/wiki/File:Skyline_of_the_Great_Tegucigalpa,_Honduras.jpg) | CC BY-SA 4.0 |
 | san-jose.jpg | [Arenal Volcano 01](https://commons.wikimedia.org/wiki/File:Arenal_Volcano_01.jpg) | CC0 |
+| cusco.jpg | [Ruins of Machu Picchu (Unsplash)](https://commons.wikimedia.org/wiki/File:Ruins_of_Machu_Picchu_(Unsplash).jpg) | CC0 |
