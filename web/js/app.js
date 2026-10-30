@@ -16,6 +16,14 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function icon(id) { return '<svg class="ic" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
 
+  // Logo de la aerolínea; si la imagen no carga, se ve su código sobre su color
+  function logo(code, size) {
+    var al = VC.AIRLINES[code];
+    return '<span class="al-logo' + (size ? ' ' + size : '') + '" style="--al:' + al.color + '">' +
+      '<img src="img/airlines/' + code + '.png" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'fallback\');this.remove()">' +
+      '<b aria-hidden="true">' + code + '</b></span>';
+  }
+
   function iso(d) {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
@@ -633,7 +641,7 @@
     $('#f-airlines').innerHTML = Object.keys(counts).sort(function (a, b) { return VC.AIRLINES[a].name.localeCompare(VC.AIRLINES[b].name); }).map(function (code) {
       var al = VC.AIRLINES[code];
       return '<label class="check"><input type="checkbox" data-f="airlines" value="' + code + '"' + (f.airlines.indexOf(code) > -1 ? ' checked' : '') + '>' +
-        '<span class="al-dot" style="--al:' + al.color + '"></span><span>' + esc(al.name) + '</span><span class="count">' + counts[code] + '</span></label>';
+        logo(code, 'xs') + '<span>' + esc(al.name) + '</span><span class="count">' + counts[code] + '</span></label>';
     }).join('');
 
     $$('#f-time input').forEach(function (i) { i.checked = f.times.indexOf(+i.value) > -1; });
@@ -761,7 +769,7 @@
       var fin = finText(o.price);
       return '<li class="offer' + (isSel ? ' is-selected' : '') + '" style="--i:' + Math.min(i, 8) + '" data-id="' + esc(o.id) + '">' +
         '<div class="offer-main">' +
-          '<div class="offer-top"><span class="al-badge" style="--al:' + al.color + '">' + o.airline + '</span><span class="al-name">' + esc(al.name) + '</span>' + tags + '</div>' +
+          '<div class="offer-top">' + logo(o.airline) + '<span class="al-name">' + esc(al.name) + '</span>' + tags + '</div>' +
           '<div class="offer-route">' +
             '<div class="pt"><strong>' + clock(o.depMin) + '</strong><span>' + o.segments[0].from + '</span></div>' +
             '<div class="track"><span>' + dur(o.duration) + '</span><div class="track-line">' +
@@ -930,7 +938,7 @@
     var n = booking.legs.length;
     return '<div class="trip-sum">' + booking.offers.map(function (o, i) {
       var l = booking.legs[i];
-      return '<div class="trip-leg"><span class="al-badge" style="--al:' + VC.AIRLINES[o.airline].color + '">' + o.airline + '</span>' +
+      return '<div class="trip-leg">' + logo(o.airline) +
         '<div><span class="when">' + legName(i, n) + ', ' + longDayFmt.format(fromIso(l.date)) + '</span><br>' +
         '<strong>' + clock(o.depMin) + ' ' + esc(city(l.from)) + ' → ' + clock(o.arrMin) + (o.dayOffset > 0 ? ' (+' + o.dayOffset + ')' : '') + ' ' + esc(city(l.to)) + '</strong><br>' +
         '<span class="when">' + dur(o.duration) + ', ' + (o.stops ? plural(o.stops, 'escala', 'escalas') : 'directo') + ', ' + VC.AIRLINES[o.airline].name + '</span></div>' +
@@ -1284,7 +1292,7 @@
   function renderMarquee() {
     var pills = Object.keys(VC.AIRLINES).map(function (k) {
       var a = VC.AIRLINES[k];
-      return '<span class="al-pill"><i style="--al:' + a.color + '"></i>' + esc(a.name) + '</span>';
+      return '<span class="al-pill">' + logo(k, 'sm') + esc(a.name) + '</span>';
     }).join('');
     $('#marquee').innerHTML = pills + pills;
   }

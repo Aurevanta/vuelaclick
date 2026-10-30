@@ -72,8 +72,16 @@
         .htmlElementsData([])
         .htmlElement(function (d) {
           var p = document.createElement('div');
-          p.className = 'globe-plane';
-          p.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26"><use href="#i-plane"/></svg>';
+          if (d.kind === 'banner') {
+            // Pancarta remolcada con el logo de VuelaClic
+            p.className = 'globe-banner';
+            p.innerHTML = '<span class="banner-flag"><svg class="banner-swoosh" viewBox="0 0 64 40" aria-hidden="true">' +
+              '<path d="M4 34C18 30 40 16 60 4" fill="none" stroke="#1B5BE0" stroke-width="6" stroke-linecap="round"/></svg>' +
+              '<span class="logo-word">Vuela<b>Clic</b></span></span>';
+          } else {
+            p.className = 'globe-plane';
+            p.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26"><use href="#i-plane"/></svg>';
+          }
           d.el = p;
           return p;
         })
@@ -142,24 +150,36 @@
     if (world) world.htmlElementsData([]);
   }
 
-  // Avión que recorre la ruta (con sus escalas) en bucle
+  // Avión que recorre la ruta (con sus escalas) en bucle, remolcando la pancarta de VuelaClic
   function flyPlane(path) {
     stopPlane();
-    if (reduced()) return;
     var aps = airportsOf(path);
     var legs = aps.length - 1;
     if (legs < 1) return;
-    var datum = { lat: aps[0].lat, lng: aps[0].lon };
-    world.htmlElementsData([datum]);
-    var start = performance.now(), perLeg = 2200;
+    // u va de 0 a «legs»: la parte entera es el tramo y la decimal, cuánto lleva recorrido
+    function at(u) {
+      var li = Math.min(Math.floor(u), legs - 1);
+      return lerpGreatCircle(aps[li], aps[li + 1], u - li);
+    }
+    var plane = { kind: 'plane', lat: aps[0].lat, lng: aps[0].lon };
+    var banner = { kind: 'banner', lat: aps[0].lat, lng: aps[0].lon };
+    if (reduced()) {
+      var mid = at(legs / 2);
+      banner.lat = mid.lat; banner.lng = mid.lng;
+      world.htmlElementsData([banner]);
+      return;
+    }
+    world.htmlElementsData([plane, banner]);
+    var start = performance.now(), perLeg = 2600, gap = 0.2;
     function step(now) {
-      var t = (Math.max(0, now - start) % (perLeg * legs)) / perLeg;
-      var li = Math.min(Math.floor(t), legs - 1), lt = t - li;
-      var p = lerpGreatCircle(aps[li], aps[li + 1], lt);
-      var q = lerpGreatCircle(aps[li], aps[li + 1], Math.min(lt + 0.01, 1));
-      datum.lat = p.lat; datum.lng = p.lng;
-      world.htmlElementsData([datum]);
-      if (datum.el) datum.el.firstChild.style.transform = 'rotate(' + bearing(p, q) + 'deg)';
+      var u = (Math.max(0, now - start) % (perLeg * legs)) / perLeg;
+      var p = at(u), q = at(Math.min(u + 0.01, legs)), b = at(Math.max(u - gap, 0));
+      plane.lat = p.lat; plane.lng = p.lng;
+      banner.lat = b.lat; banner.lng = b.lng;
+      world.htmlElementsData([plane, banner]);
+      if (plane.el) plane.el.firstChild.style.transform = 'rotate(' + bearing(p, q) + 'deg)';
+      // la pancarta aparece cuando el avión ya ha despegado y se recoge al aterrizar
+      if (banner.el) banner.el.style.opacity = u < gap || u > legs - 0.03 ? 0 : 1;
       planeTimer = requestAnimationFrame(step);
     }
     planeTimer = requestAnimationFrame(step);
