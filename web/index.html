@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VuelaClic — Vuelos económicos a Latinoamérica y el mundo</title>
+  <meta name="description" content="Busca y reserva vuelos con equipaje incluido y paga desde 100 € el resto en cuotas. Atención personalizada por WhatsApp.">
+  <meta name="theme-color" content="#0A2463">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plane" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></g></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></g></symbol>
+  <symbol id="i-takeoff" viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 19h19v2h-19zM22.07 9.64c-.21-.8-1.04-1.28-1.84-1.06L14.92 10 8 3.57l-1.93.51 4.14 7.17-4.97 1.33-1.97-1.54-1.45.39 2.59 4.49 16.6-4.45c.81-.23 1.28-1.05 1.06-1.84z"/></symbol>
+  <symbol id="i-landing" viewBox="0 0 24 24"><path fill="currentColor" d="M2.5 19h19v2h-19zM9.68 13.27l4.35 1.16 5.31 1.42c.8.21 1.62-.26 1.84-1.06.21-.8-.26-1.62-1.06-1.84l-5.31-1.42-2.76-9.02L10.12 2v8.28L5.15 8.95l-.93-2.32-1.45-.39v5.17l1.6.43 5.31 1.43z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></g></symbol>
+  <symbol id="i-backpack" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 10a7 7 0 0 1 14 0v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M9 3.5h6M8 21v-5h8v5"/></g></symbol>
+  <symbol id="i-cabin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="6" width="12" height="14" rx="2"/><path d="M10 6V3h4v3M9 22v-2M15 22v-2"/></g></symbol>
+  <symbol id="i-suitcase" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="2.5"/><path d="M9 7V4h6v3M9 11v5M15 11v5"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M5 12h14"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></g></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3 9.5 12 4l9 5.5zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20.5h18"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></g></symbol>
+  <symbol id="i-split" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></g></symbol>
+  <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.42 1.3-1.96 1.35-.5.05-.97.23-3.28-.68-2.77-1.09-4.53-3.93-4.67-4.11-.13-.18-1.11-1.48-1.11-2.82s.7-2 .95-2.27c.25-.27.54-.34.72-.34l.52.01c.17.01.39-.06.61.47.23.54.77 1.88.84 2.02.07.13.11.29.02.47-.09.18-.13.29-.27.45l-.4.47c-.13.13-.27.28-.12.55.16.27.7 1.15 1.5 1.86 1.03.92 1.9 1.2 2.17 1.34.27.13.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.52.32.07.11.07.66-.17 1.33z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h10M18 7h2M4 17h4M12 17h8M16 5v4M10 15v4"/></symbol>
+</svg>
+
+<a class="skip" href="#buscar">Ir al buscador</a>
+
+<header class="site-header" id="top">
+  <div class="wrap header-row">
+    <a class="logo" href="#top" aria-label="VuelaClic, inicio">
+      <svg class="logo-swoosh" viewBox="0 0 64 40" aria-hidden="true">
+        <path d="M4 34C18 30 40 16 60 4" fill="none" stroke="url(#lg)" stroke-width="5" stroke-linecap="round"/>
+        <defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#29B5F2"/><stop offset="1" stop-color="#FFC531"/></linearGradient></defs>
+        <use href="#i-plane" x="44" y="-2" width="18" height="18" transform="rotate(58 53 7)" style="color:#fff"/>
+      </svg>
+      <span class="logo-word">Vuela<b>Clic</b></span>
+    </a>
+    <nav class="main-nav" aria-label="Principal">
+      <a href="#buscar">Vuelos</a>
+      <a href="#destinos">Destinos</a>
+      <a href="#financiacion">Financiación</a>
+      <a href="#como">Cómo reservar</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <a class="header-wa" href="https://wa.me/34647778336" target="_blank" rel="noopener">
+      <svg class="ic"><use href="#i-whatsapp"/></svg><span>647 778 336</span>
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="sky" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="cloud-layer far"><i></i><i></i><i></i><i></i></div>
+      <svg class="flight-path" viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice">
+        <path id="route" d="M-40 560 C 260 520, 420 300, 760 280 S 1240 120, 1500 60" fill="none"/>
+        <use class="route-line" href="#route"/>
+        <g class="route-plane">
+          <use href="#i-plane" x="-14" y="-14" width="28" height="28" transform="rotate(90)"/>
+          <animateMotion dur="14s" repeatCount="indefinite" rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="linear">
+            <mpath href="#route"/>
+          </animateMotion>
+        </g>
+      </svg>
+      <div class="cloud-layer near"><i></i><i></i><i></i></div>
+    </div>
+
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1 id="hero-title">Tú eliges el destino. Nosotros hacemos el resto.</h1>
+        <p class="hero-lead">Vuelos a Latinoamérica y a medio mundo con equipaje incluido. Reserva hoy con 100&nbsp;€ y paga el resto en cuotas.</p>
+        <ul class="hero-perks">
+          <li><svg class="ic"><use href="#i-suitcase"/></svg>Maleta de 23 kg incluida</li>
+          <li><svg class="ic"><use href="#i-split"/></svg>Hasta 12 cuotas sin intereses</li>
+          <li><svg class="ic"><use href="#i-whatsapp"/></svg>Te atiende una persona</li>
+        </ul>
+      </div>
+
+      <figure class="board" aria-label="Próximas salidas desde Madrid">
+        <figcaption class="board-head">
+          <svg class="ic"><use href="#i-takeoff"/></svg>
+          <span>Salidas desde Madrid</span>
+          <span class="board-clock" id="board-clock">--:--</span>
+        </figcaption>
+        <div class="board-cols" aria-hidden="true"><span>Hora</span><span>Destino</span><span>Vuelo</span><span>Desde</span></div>
+        <div class="board-rows" id="board-rows"></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="search-wrap" id="buscar" aria-label="Buscador de vuelos">
+    <div class="wrap">
+      <form class="search-card" id="search-form" novalidate>
+        <div class="trip-tabs" role="radiogroup" aria-label="Tipo de viaje">
+          <label><input type="radio" name="trip" value="rt" checked><span>Ida y vuelta</span></label>
+          <label><input type="radio" name="trip" value="ow"><span>Solo ida</span></label>
+          <label><input type="radio" name="trip" value="md"><span>Multidestino</span></label>
+        </div>
+
+        <div class="legs" id="legs"></div>
+
+        <div class="search-foot">
+          <button type="button" class="add-leg" id="add-leg" hidden>
+            <svg class="ic"><use href="#i-plus"/></svg>Añadir tramo
+          </button>
+          <div class="pax-field">
+            <button type="button" class="field pax-btn" id="pax-btn" aria-haspopup="dialog" aria-expanded="false">
+              <svg class="ic"><use href="#i-user"/></svg>
+              <span class="field-text"><small>Viajeros y clase</small><strong id="pax-summary">1 adulto, Turista</strong></span>
+            </button>
+            <div class="pax-pop" id="pax-pop" role="dialog" aria-label="Viajeros y clase" hidden>
+              <div class="pax-row" data-type="adt"><div><strong>Adultos</strong><small>12 años o más</small></div><div class="stepper"><button type="button" data-step="-1" aria-label="Quitar adulto"><svg class="ic"><use href="#i-minus"/></svg></button><output>1</output><button type="button" data-step="1" aria-label="Añadir adulto"><svg class="ic"><use href="#i-plus"/></svg></button></div></div>
+              <div class="pax-row" data-type="chd"><div><strong>Niños</strong><small>De 2 a 11 años</small></div><div class="stepper"><button type="button" data-step="-1" aria-label="Quitar niño"><svg class="ic"><use href="#i-minus"/></svg></button><output>0</output><button type="button" data-step="1" aria-label="Añadir niño"><svg class="ic"><use href="#i-plus"/></svg></button></div></div>
+              <div class="pax-row" data-type="inf"><div><strong>Bebés</strong><small>Menores de 2 años</small></div><div class="stepper"><button type="button" data-step="-1" aria-label="Quitar bebé"><svg class="ic"><use href="#i-minus"/></svg></button><output>0</output><button type="button" data-step="1" aria-label="Añadir bebé"><svg class="ic"><use href="#i-plus"/></svg></button></div></div>
+              <fieldset class="cabin-pick">
+                <legend>Clase</legend>
+                <label><input type="radio" name="cabin" value="Y" checked><span>Turista</span></label>
+                <label><input type="radio" name="cabin" value="W"><span>Premium</span></label>
+                <label><input type="radio" name="cabin" value="C"><span>Business</span></label>
+              </fieldset>
+              <button type="button" class="btn btn-ghost pax-done" id="pax-done">Listo</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-sun search-submit">
+            <svg class="ic"><use href="#i-search"/></svg>Buscar vuelos
+          </button>
+        </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="results" id="resultados" hidden aria-live="polite">
+    <div class="wrap">
+      <header class="results-head">
+        <div>
+          <h2 id="results-title">Vuelos</h2>
+          <p id="results-sub"></p>
+        </div>
+        <button type="button" class="btn btn-ghost" id="edit-search">Cambiar búsqueda</button>
+      </header>
+
+      <div class="leg-tabs" id="leg-tabs" role="tablist"></div>
+
+      <div class="fare-cal" id="fare-cal" aria-label="Precio más bajo por día"></div>
+
+      <div class="results-layout">
+        <aside class="filters" id="filters" aria-label="Filtros">
+          <div class="filters-head">
+            <h3>Filtrar</h3>
+            <button type="button" class="link" id="clear-filters">Quitar filtros</button>
+          </div>
+          <fieldset>
+            <legend>Escalas</legend>
+            <div id="f-stops"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Hora de salida</legend>
+            <div class="chip-grid" id="f-time">
+              <label><input type="checkbox" value="0"><span>Madrugada<small>00–06 h</small></span></label>
+              <label><input type="checkbox" value="1"><span>Mañana<small>06–12 h</small></span></label>
+              <label><input type="checkbox" value="2"><span>Tarde<small>12–18 h</small></span></label>
+              <label><input type="checkbox" value="3"><span>Noche<small>18–24 h</small></span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Aerolíneas</legend>
+            <div id="f-airlines"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Equipaje</legend>
+            <label class="check"><input type="checkbox" id="f-bags"><span>Solo con maleta facturada</span></label>
+          </fieldset>
+        </aside>
+
+        <div class="results-main">
+          <div class="sort-tabs" id="sort-tabs" role="tablist" aria-label="Ordenar">
+            <button type="button" role="tab" data-sort="best" aria-selected="true"><span>Recomendado</span><small></small></button>
+            <button type="button" role="tab" data-sort="price" aria-selected="false"><span>Más barato</span><small></small></button>
+            <button type="button" role="tab" data-sort="fast" aria-selected="false"><span>Más rápido</span><small></small></button>
+          </div>
+          <button type="button" class="btn btn-ghost filters-toggle" id="filters-toggle">
+            <svg class="ic"><use href="#i-sliders"/></svg>Filtros
+          </button>
+
+          <div class="loading" id="loading" hidden>
+            <div class="runway"><div class="runway-plane"><svg class="ic"><use href="#i-plane"/></svg></div></div>
+            <p id="loading-text">Consultando aerolíneas…</p>
+          </div>
+
+          <ol class="offer-list" id="offer-list"></ol>
+          <div class="empty" id="empty" hidden>
+            <h3>No hay vuelos con estos filtros</h3>
+            <p>Prueba a quitar algún filtro o a cambiar la fecha en el calendario de arriba.</p>
+            <button type="button" class="btn btn-ghost" id="empty-clear">Quitar filtros</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="selection-bar" id="selection-bar" hidden>
+      <div class="wrap selection-row">
+        <div class="selection-legs" id="selection-legs"></div>
+        <div class="selection-total">
+          <small>Total para <span id="sel-pax">1 viajero</span></small>
+          <strong id="sel-total">0 €</strong>
+        </div>
+        <button type="button" class="btn btn-sun" id="sel-continue" disabled>Continuar</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="destinations" id="destinos" aria-labelledby="dest-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="dest-title">Los destinos que más vuelan con nosotros</h2>
+        <p>Precio por persona, ida y vuelta, el día más barato del próximo mes. Toca uno y lo buscamos por ti.</p>
+      </div>
+      <div class="dest-grid" id="dest-grid"></div>
+    </div>
+  </section>
+
+  <section class="finance" id="financiacion" aria-labelledby="fin-title">
+    <div class="wrap finance-grid">
+      <div class="finance-copy">
+        <h2 id="fin-title">Viaja hoy y paga poco a poco</h2>
+        <p>Bloqueas tu billete con 100 € y el resto lo repartes en cuotas, sin intereses. La financiación la gestiona Fliinow y se aprueba en minutos con tu DNI o NIE.</p>
+        <ul class="finance-points">
+          <li><svg class="ic"><use href="#i-check"/></svg>Pago inicial de 100 €</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>De 3 a 12 cuotas mensuales</li>
+          <li><svg class="ic"><use href="#i-check"/></svg>También tarjeta, Bizum o transferencia</li>
+        </ul>
+      </div>
+      <div class="calc" id="calc">
+        <label for="calc-price" class="calc-label">Precio de tu viaje</label>
+        <output class="calc-price" id="calc-price-out">900 €</output>
+        <input type="range" id="calc-price" min="300" max="3000" step="10" value="900">
+        <div class="calc-plans" role="radiogroup" aria-label="Número de cuotas">
+          <label><input type="radio" name="calc-plan" value="3"><span>3 cuotas</span></label>
+          <label><input type="radio" name="calc-plan" value="6" checked><span>6 cuotas</span></label>
+          <label><input type="radio" name="calc-plan" value="12"><span>12 cuotas</span></label>
+        </div>
+        <div class="calc-result">
+          <div><small>Hoy pagas</small><strong>100 €</strong></div>
+          <div><small>Y luego, cada mes</small><strong id="calc-monthly">133,33 €</strong></div>
+        </div>
+        <p class="fine">Simulación orientativa. La aprobación y las condiciones finales dependen de Fliinow.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="como" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="how-title">Cómo reservar</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>Busca y compara</h3>
+          <p>Ves al momento los vuelos de varias aerolíneas, con el equipaje y el precio final ya calculados.</p>
+        </li>
+        <li>
+          <h3>Paga como prefieras</h3>
+          <p>Tarjeta, Bizum, transferencia o 100 € de entrada y el resto en cuotas. El pago lo recibimos directamente nosotros.</p>
+        </li>
+        <li>
+          <h3>Emitimos tu billete</h3>
+          <p>Confirmamos la plaza con la aerolínea y te enviamos el billete por email y WhatsApp.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="airlines" aria-labelledby="air-title">
+    <div class="wrap"><h2 id="air-title" class="airlines-title">Trabajamos con</h2></div>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marquee"></div>
+    </div>
+    <p class="sr-only">Iberia, Air Europa, Plus Ultra, Level, LATAM, Avianca, Copa Airlines, KLM y Air France.</p>
+  </section>
+
+  <section class="contact" id="contacto" aria-labelledby="contact-title">
+    <div class="wrap contact-card">
+      <div class="agent">
+        <div class="agent-avatar" aria-hidden="true">JG</div>
+        <div>
+          <h2 id="contact-title">¿Prefieres que te lo busque yo?</h2>
+          <p>Soy Juan Gómez, agente de viajes. Escríbeme con tus fechas y te paso las mejores opciones, también para grupos y paquetes con hotel.</p>
+        </div>
+      </div>
+      <div class="contact-actions">
+        <a class="btn btn-wa" href="https://wa.me/34647778336?text=Hola%20Juan%2C%20quiero%20informaci%C3%B3n%20sobre%20un%20vuelo" target="_blank" rel="noopener">
+          <svg class="ic"><use href="#i-whatsapp"/></svg>Escribir por WhatsApp
+        </a>
+        <p class="contact-alt">+34 647 778 336<br>Facebook y TikTok: VuelaClic</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <span class="logo-word small">Vuela<b>Clic</b></span>
+    <p>Versión de demostración. Los vuelos y precios son simulados y no se realiza ningún cobro. Fotos de Wikimedia Commons (<a href="img/CREDITS.md">créditos</a>).</p>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/34647778336" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <svg class="ic"><use href="#i-whatsapp"/></svg>
+</a>
+
+<dialog class="booking" id="booking" aria-labelledby="booking-title">
+  <div class="booking-inner">
+    <header class="booking-head">
+      <h2 id="booking-title">Tu reserva</h2>
+      <ol class="booking-steps" id="booking-steps">
+        <li>Viaje</li><li>Viajeros</li><li>Pago</li><li>Billete</li>
+      </ol>
+      <button type="button" class="icon-btn" id="booking-close" aria-label="Cerrar"><svg class="ic"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="booking-body" id="booking-body"></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="js/data.js"></script>
+<script src="js/simulator.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
