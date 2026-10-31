@@ -81,14 +81,15 @@ a { color: inherit; }
   backdrop-filter: blur(14px) saturate(1.4);
   color: #fff;
 }
-.header-row { display: flex; align-items: center; gap: 28px; height: 68px; }
+.header-row { display: flex; align-items: center; gap: 14px; height: 68px; }
+.header-row > * { flex: none; white-space: nowrap; }
 .logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
 .logo-swoosh { width: 44px; height: 28px; }
 .logo-word { font: 800 26px/1 var(--display); letter-spacing: -.035em; color: #fff; }
 .logo-word b { font-weight: 800; color: var(--sky); }
 .logo-word.small { font-size: 22px; }
 .main-nav { display: flex; gap: 4px; margin-left: auto; }
-.main-nav a { padding: 8px 12px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px; opacity: .88; }
+.main-nav a { padding: 8px 9px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px; opacity: .88; white-space: nowrap; }
 .main-nav a:hover { opacity: 1; background: rgba(255, 255, 255, .1); }
 .header-wa { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, .12); font-weight: 700; text-decoration: none; font-size: 15px; }
 .header-wa .ic { color: #3DDC7A; }
@@ -613,6 +614,13 @@ body.has-selection .toast { bottom: 108px; }
 .inp input, .inp select { width: 100%; min-width: 0; }
 .booking-steps li { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* con el menú visible y poco ancho, el WhatsApp de la cabecera queda solo en icono */
+@media (min-width: 1081px) and (max-width: 1380px) {
+  .header-wa { width: 38px; height: 38px; padding: 0; justify-content: center; }
+  .header-wa span { display: none; }
+  .main-nav { gap: 2px; }
+  .main-nav a { padding: 8px 7px; }
+}
 @media (max-width: 1080px) {
   .main-nav { display: none; }
   .header-wa { margin-left: auto; }
