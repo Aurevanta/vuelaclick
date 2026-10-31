@@ -38,6 +38,27 @@
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
   function reducedMotion() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 
+  // Al repintar con innerHTML se pierde el foco; estas dos funciones lo devuelven
+  // al control equivalente para que quien usa teclado no vuelva al principio.
+  var FOCUS_ATTRS = ['data-seat', 'data-seg', 'data-who', 'data-act', 'data-sort', 'data-leg'];
+  function focusKey(el) {
+    if (!el || el === document.body) return null;
+    for (var i = 0; i < FOCUS_ATTRS.length; i++) {
+      var a = FOCUS_ATTRS[i];
+      if (!el.hasAttribute(a)) continue;
+      var sel = '[' + a + '="' + CSS.escape(el.getAttribute(a)) + '"]';
+      var offer = el.closest('.offer');
+      return offer ? '.offer[data-id="' + CSS.escape(offer.dataset.id) + '"] ' + sel : sel;
+    }
+    return null;
+  }
+  function restoreFocus(key, fallback) {
+    var el = key && $(key);
+    // un control desactivado no recibe el foco (p. ej. ese asiento está ocupado en el vuelo siguiente)
+    if (!el || el.disabled) el = fallback && $(fallback);
+    if (el) el.focus({ preventScroll: true });
+  }
+
   var toastTimer;
   function toast(msg) {
     var t = $('#toast');
@@ -429,6 +450,7 @@
       if (!l.from || !l.to) return form.trip === 'md' ? 'Elige origen y destino del tramo ' + (i + 1) + '.' : 'Elige de dónde sales y a dónde vas.';
       if (l.from === l.to) return 'El origen y el destino tienen que ser distintos.';
       if (!l.date || l.date < today()) return 'Elige una fecha de ida a partir de hoy.';
+      if (form.trip === 'md' && i > 0 && l.date < form.legs[i - 1].date) return 'El tramo ' + (i + 1) + ' tiene que salir el mismo día que el tramo ' + i + ' o después.';
       if (form.trip === 'rt' && (!l.ret || l.ret < l.date)) return 'La vuelta tiene que ser el mismo día de la ida o después.';
     }
     return null;
@@ -723,7 +745,7 @@
   }
 
   function finText(price) {
-    if (price < 300) return '';
+    if (!VC.settings.canFinance(price)) return '';
     return 'o 100 € hoy y 6 cuotas de ' + cents((price - 100) / 6);
   }
 
@@ -744,6 +766,10 @@
     });
 
     $('#empty').hidden = sorted.length > 0;
+    // resumen corto para lectores de pantalla (la lista entera no se anuncia)
+    $('#results-status').textContent = sorted.length
+      ? plural(sorted.length, 'vuelo', 'vuelos') + ', desde ' + money(cheapest.price) + '.'
+      : 'No hay vuelos con estos filtros.';
     if (!sorted.length) {
       var overBudget = search.budget && all.length && applyFilters(all).length === 0 &&
         all.every(function (o) { return o.pricePerAdult > budgetLimit(); });
@@ -800,6 +826,7 @@
       if (!b || !search || !search.result) return;
       search.sort = b.dataset.sort;
       renderOffers();
+      restoreFocus(focusKey(b));
     });
 
     $('#offer-list').addEventListener('click', function (e) {
@@ -807,20 +834,28 @@
       if (!act) return;
       var id = act.closest('.offer').dataset.id;
       var offer = currentOffers().find(function (o) { return o.id === id; });
+      var key = focusKey(act);
       if (act.dataset.act === 'details') {
         search.open[id] = !search.open[id];
         renderOffers();
+        restoreFocus(key);
         return;
       }
       search.selected[search.active] = offer;
       renderOffers();
       renderLegTabs();
       renderSelection();
+      restoreFocus(key);
       var n = search.params.legs.length;
       var next = search.selected.findIndex(function (s) { return !s; });
       if (next > -1) {
         toast(legName(search.active, n) + ' elegida. Ahora elige ' + legName(next, n).toLowerCase() + '.');
-        setTimeout(function () { switchLeg(next); }, 450);
+        setTimeout(function () {
+          var hadFocus = document.activeElement && document.activeElement.closest('#offer-list');
+          switchLeg(next);
+          // el teclado sigue en la pestaña del tramo nuevo
+          if (hadFocus) restoreFocus('#leg-tabs [aria-selected=true]');
+        }, 450);
       } else {
         toast('Listo. Revisa el total y continúa con la reserva.');
       }
@@ -1031,7 +1066,7 @@
       // la agencia activa o desactiva formas de pago desde su panel
       var cfg = VC.settings.get();
       var allowed = ['card', 'bizum', 'transfer', 'fin'].filter(function (m) {
-        return cfg.pay[m] && (m !== 'fin' || booking.total >= cfg.finMin);
+        return m === 'fin' ? VC.settings.canFinance(booking.total) : cfg.pay[m];
       });
       if (!allowed.length) allowed = ['card'];
       if (allowed.indexOf(booking.method) < 0) booking.method = allowed[0];
@@ -1225,7 +1260,15 @@
     dlg.addEventListener('close', function () { $('#booking-title').textContent = 'Tu reserva'; });
     dlg.addEventListener('click', function (e) {
       if (e.target === dlg) { dlg.close(); return; }
-      if (booking.step === 2 && VC.seats.click(e, booking, booking.seatUi)) { renderBooking(); return; }
+      if (booking.step === 2) {
+        var seatKey = focusKey(e.target.closest('[data-seat], [data-seg], [data-who]'));
+        if (VC.seats.click(e, booking, booking.seatUi)) {
+          renderBooking();
+          // si pasó al siguiente vuelo, el asiento ya no existe: foco en la pestaña del vuelo
+          restoreFocus(seatKey, '.seat-tabs [aria-selected=true], .seat-people [aria-pressed=true]');
+          return;
+        }
+      }
       if (e.target.closest('[data-next]')) { booking.step++; renderBooking(); }
       if (e.target.closest('[data-back]')) { booking.step--; renderBooking(); }
       if (e.target.closest('[data-skip-seats]')) { booking.seats = {}; booking.step = 3; renderBooking(); }
@@ -1416,6 +1459,8 @@
   // ---------- Aviso publicado desde el panel ----------
   function renderNotice() {
     var s = VC.settings.get();
+    // sin financiación, se ocultan todos los mensajes de cuotas de la portada
+    document.body.classList.toggle('no-fin', !s.pay.fin);
     var on = s.noticeOn && s.notice.trim();
     $('#site-notice').hidden = !on;
     if (on) $('#site-notice-text').textContent = s.notice.trim();

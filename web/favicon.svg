@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="t" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1B5BE0"/><stop offset=".6" stop-color="#29B5F2"/><stop offset="1" stop-color="#29B5F2" stop-opacity=".2"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0A2463"/>
+  <!-- estela y V del logo de VuelaClic -->
+  <path d="M8 46 C 20 30, 38 18, 60 12 C 40 22, 24 34, 13 49 Z" fill="url(#t)"/>
+  <path fill="#fff" d="M9 16 C 15 15, 19 19, 21 25 L 29 45 L 37 22 L 48 22 L 34 56 L 24 56 L 15 28 C 13.5 23, 12 18, 9 16 Z"/>
+</svg>

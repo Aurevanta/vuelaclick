@@ -613,7 +613,8 @@ body.has-selection .toast { bottom: 108px; }
 
 .toast {
   position: fixed; left: 50%; bottom: 28px; z-index: 60; transform: translateX(-50%);
-  background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 14px; font-weight: 600; box-shadow: var(--shadow-lift);
+  /* color fijo: var(--ink) se vuelve claro en modo noche y el texto blanco desaparecía */
+  background: #0E1B3D; color: #fff; padding: 12px 18px; border-radius: 14px; font-weight: 600; box-shadow: var(--shadow-lift), 0 0 0 1px rgba(255, 255, 255, .14);
   animation: rise .3s var(--ease-out);
 }
 
@@ -1033,6 +1034,21 @@ body.has-selection .toast { bottom: 108px; }
 }
 
 /* ======================================================================
+   Ajustes de la auditoría: financiación según el panel y contraste AA
+   ====================================================================== */
+body.no-fin [data-fin] { display: none !important; }
+/* texto pequeño: verde, rojo y gris con contraste mínimo de 4,5:1 sobre blanco */
+.btn-wa { background: #0F7F43; }
+.btn-wa:hover { background: #0B6B38; }
+.track .direct, .booking-steps li.done { color: #0B7A50; }
+.pt sup { color: #B7342A; }
+.booking-steps li, .row-n { color: var(--muted); }
+.booking-steps li.current { color: var(--strong); }
+:root[data-theme=night] .track .direct, :root[data-theme=night] .booking-steps li.done { color: #4FD49E; }
+:root[data-theme=night] .pt sup { color: #FF8A80; }
+:root[data-theme=night] .booking-steps li, :root[data-theme=night] .row-n { color: var(--muted); }
+
+/* ======================================================================
    Página legal
    ====================================================================== */
 .legal-header { background: var(--night); }
@@ -1072,6 +1088,7 @@ body.has-selection .toast { bottom: 108px; }
 .legal-table td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .legal-table code { font-size: 13px; background: var(--cloud); padding: 2px 6px; border-radius: 6px; }
 .legal-updated { color: var(--muted); font-size: 14px; }
+.legal-content .credits { font-size: 14.5px; }
 .terms-check { align-items: flex-start; font-size: 14px; font-weight: 600; }
 .terms-check input, .acc-check input { flex: none; margin-top: 2px; }
 .terms-check a, .acc-check a { color: var(--blue); }
@@ -1207,12 +1224,10 @@ body.has-selection .toast { bottom: 108px; }
 :root[data-theme=night] .assist-avatar { background: #18306E; }
 :root[data-theme=night] .seat.occ { background: #22366F; }
 :root[data-theme=night] .seat.middle { background: #3E6FD0; }
-:root[data-theme=night] .row-n { color: #5A6FA6; }
 :root[data-theme=night] .ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
 :root[data-theme=night] .demo-note { color: #FFD66B; }
-:root[data-theme=night] .booking-steps li { color: #5A6FA6; }
 :root[data-theme=night] .booking-steps li.done { color: #4FD49E; }
-:root[data-theme=night] .booking-steps li.current { border-color: var(--sky); }
+:root[data-theme=night] .booking-steps li.current { border-color: var(--sky); color: var(--strong); }
 :root[data-theme=night] .dest-tag { background: rgba(6, 17, 43, .45); }
 /* Al cambiar de tema las superficies se funden en lugar de saltar */
 :root.theme-anim body, :root.theme-anim body * { transition: background-color .6s ease, border-color .6s ease, color .4s ease; }

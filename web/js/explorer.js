@@ -99,7 +99,7 @@
 
   function monthly(price) { return (price - 100) / 12; }
   function fits(p) {
-    return state.mode === 'total' ? p.price <= state.budget.total : p.price >= 300 && monthly(p.price) <= state.budget.month;
+    return state.mode === 'total' ? p.price <= state.budget.total : VC.settings.canFinance(p.price) && monthly(p.price) <= state.budget.month;
   }
 
   function render() {
@@ -121,7 +121,7 @@
     var count = document.getElementById('ex-count');
     count.textContent = ok.length
       ? (ok.length === 1 ? 'Te llega para 1 destino.' : 'Te llega para ' + ok.length + ' destinos.')
-      : 'Todavía no llega para ningún destino. Sube un poco el presupuesto' + (state.mode === 'total' ? ' o prueba a pagarlo en cuotas.' : '.');
+      : 'Todavía no llega para ningún destino. Sube un poco el presupuesto' + (state.mode === 'total' && VC.settings.finOn ? ' o prueba a pagarlo en cuotas.' : '.');
     document.getElementById('ex-list').innerHTML = ok.slice(0, 5).map(function (p) {
       var a = VC.airport(p.code);
       return '<li><button type="button" data-code="' + p.code + '"><span><strong>' + a.city + '</strong><small>' + a.country + '</small></span>' +
@@ -132,6 +132,11 @@
   }
 
   function setMode(mode) {
+    // si la agencia ha desactivado la financiación, no hay modo «cuota al mes»
+    if (mode === 'month' && !VC.settings.finOn) {
+      mode = 'total';
+      document.querySelector('input[name=ex-mode][value=total]').checked = true;
+    }
     state.mode = mode;
     var r = document.getElementById('ex-budget'), m = MODES[mode];
     r.min = m.min; r.max = m.max; r.step = m.step; r.value = state.budget[mode];

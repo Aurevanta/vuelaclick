@@ -1,0 +1,12 @@
+{
+  "name": "VuelaClic — Tickets económicos",
+  "short_name": "VuelaClic",
+  "lang": "es",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0A2463",
+  "theme_color": "#0A2463",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

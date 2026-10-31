@@ -6,6 +6,18 @@
   <title>VuelaClic — Vuelos económicos a Latinoamérica y el mundo</title>
   <meta name="description" content="Busca y reserva vuelos con equipaje incluido y paga desde 100 € el resto en cuotas. Atención personalizada por WhatsApp.">
   <meta name="theme-color" content="#0A2463">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Vista previa al compartir el enlace (WhatsApp, redes) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="VuelaClic">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:title" content="VuelaClic — Vuelos económicos a Latinoamérica y el mundo">
+  <meta property="og:description" content="Busca y reserva vuelos con maleta incluida. Paga desde 100 € y el resto en cuotas. Te atiende una persona por WhatsApp.">
+  <meta property="og:url" content="https://vuelaclick.netlify.app/">
+  <meta property="og:image" content="https://vuelaclick.netlify.app/img/cusco.jpg">
+  <meta property="og:image:alt" content="Machu Picchu, Perú">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -82,7 +94,7 @@
     <nav class="main-nav" aria-label="Principal">
       <a href="#buscar">Vuelos</a>
       <a href="#destinos">Destinos</a>
-      <a href="#financiacion">Financiación</a>
+      <a href="#financiacion" data-fin>Financiación</a>
       <a href="#como">Cómo reservar</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -124,10 +136,10 @@
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1 id="hero-title">Tú eliges el destino. Nosotros hacemos el resto.</h1>
-        <p class="hero-lead">Vuelos a Latinoamérica y a medio mundo con equipaje incluido. Reserva hoy con 100&nbsp;€ y paga el resto en cuotas.</p>
+        <p class="hero-lead">Vuelos a Latinoamérica y a medio mundo con equipaje incluido.<span data-fin> Reserva hoy con 100&nbsp;€ y paga el resto en cuotas.</span></p>
         <ul class="hero-perks">
           <li><svg class="ic"><use href="#i-suitcase"/></svg>Maleta de 23 kg incluida</li>
-          <li><svg class="ic"><use href="#i-split"/></svg>Hasta 12 cuotas sin intereses</li>
+          <li data-fin><svg class="ic"><use href="#i-split"/></svg>Hasta 12 cuotas sin intereses</li>
           <li><svg class="ic"><use href="#i-whatsapp"/></svg>Te atiende una persona</li>
         </ul>
       </div>
@@ -203,7 +215,8 @@
     </div>
   </section>
 
-  <section class="results" id="resultados" hidden aria-live="polite">
+  <section class="results" id="resultados" hidden>
+    <p class="sr-only" id="results-status" role="status"></p>
     <div class="wrap">
       <header class="results-head">
         <div>
@@ -307,7 +320,7 @@
         <div class="ex-controls">
           <div class="ex-mode" role="radiogroup" aria-label="Cómo quieres pagar">
             <label><input type="radio" name="ex-mode" value="total" checked><span>Precio total</span></label>
-            <label><input type="radio" name="ex-mode" value="month"><span>Cuota al mes</span></label>
+            <label data-fin><input type="radio" name="ex-mode" value="month"><span>Cuota al mes</span></label>
           </div>
           <label class="ex-origin">Saliendo de
             <select id="ex-origin">
@@ -329,7 +342,7 @@
     </div>
   </section>
 
-  <section class="finance" id="financiacion" aria-labelledby="fin-title">
+  <section class="finance" id="financiacion" aria-labelledby="fin-title" data-fin>
     <div class="wrap finance-grid">
       <div class="finance-copy">
         <h2 id="fin-title">Viaja hoy y paga poco a poco</h2>
@@ -370,7 +383,7 @@
         </li>
         <li>
           <h3>Paga como prefieras</h3>
-          <p>Tarjeta, Bizum, transferencia o 100 € de entrada y el resto en cuotas. El pago lo recibimos directamente nosotros.</p>
+          <p>Tarjeta, Bizum, transferencia<span data-fin> o 100 € de entrada y el resto en cuotas</span>. El pago lo recibimos directamente nosotros.</p>
         </li>
         <li>
           <h3>Emitimos tu billete</h3>
@@ -410,7 +423,7 @@
 <footer class="site-footer">
   <div class="wrap footer-row">
     <svg class="brand brand-foot" viewBox="0 0 290 96" role="img" aria-label="VuelaClic, tickets económicos"><use href="#vc-logo" width="290" height="96"/></svg>
-    <p>Versión de demostración. Los vuelos y precios son simulados y no se realiza ningún cobro. Fotos de Wikimedia Commons (<a href="img/CREDITS.md">créditos</a>).</p>
+    <p>Versión de demostración. Los vuelos y precios son simulados y no se realiza ningún cobro. Fotos de Wikimedia Commons (<a href="legal.html#creditos">créditos</a>).</p>
     <nav class="footer-legal" aria-label="Legal">
       <a href="legal.html#aviso-legal">Aviso legal</a><a href="legal.html#condiciones">Condiciones</a><a href="legal.html#privacidad">Privacidad</a><a href="legal.html#cookies">Cookies</a>
     </nav>

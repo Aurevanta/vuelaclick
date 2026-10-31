@@ -42,7 +42,10 @@
       var s = VC.store.get('settings', {});
       return Object.assign({}, this.defaults, s, { pay: Object.assign({}, this.defaults.pay, s.pay) });
     },
-    set: function (patch) { VC.store.set('settings', Object.assign(this.get(), patch)); }
+    set: function (patch) { VC.store.set('settings', Object.assign(this.get(), patch)); },
+    // única fuente de verdad para ofrecer cuotas: tarjetas, explorador, portada y pago
+    get finOn() { return this.get().pay.fin; },
+    canFinance: function (price) { var s = this.get(); return s.pay.fin && price >= s.finMin; }
   };
 
   function withMargin(offer) {

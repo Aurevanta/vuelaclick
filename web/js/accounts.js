@@ -118,7 +118,7 @@
         var dep = new Date(); dep.setMonth(dep.getMonth() - 3);
         var ret = new Date(dep); ret.setDate(ret.getDate() + 21);
         var booked = new Date(created); booked.setDate(booked.getDate() + 2);
-        var iso = function (d) { return d.toISOString().slice(0, 10); };
+        var iso = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
         var list = VC.store.get('bookings', []);
         list.push({
           locator: 'QX7LMA', createdAt: booked.toISOString(), userEmail: DEMO.email,

@@ -99,7 +99,9 @@
 
   function profileView(u) {
     var trips = VC.auth.bookings();
-    var today = new Date().toISOString().slice(0, 10);
+    var now = new Date();
+    // fecha local, no UTC: de madrugada en España, UTC aún es el día anterior
+    var today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
     var upcoming = trips.filter(function (b) { return b.legs[b.legs.length - 1].date >= today && b.status !== 'cancelled'; });
     var past = trips.filter(function (b) { return upcoming.indexOf(b) < 0; });
     var html = '<div class="acc-head"><span class="acc-avatar big" aria-hidden="true">' + esc(initials(u)) + '</span>' +

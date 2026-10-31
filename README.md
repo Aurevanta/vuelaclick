@@ -2,6 +2,7 @@
 
 Muestra de la web de la agencia con buscador de vuelos y un simulador que devuelve
 ofertas verosímiles. No hay backend: son HTML, CSS y JavaScript estáticos.
+La auditoría de calidad y su plan de arreglos están en `docs/auditoria/`.
 
 ## Cómo abrirla
 
@@ -82,6 +83,9 @@ agencia) tiene que hacerlo el backend: aquí solo se simula.
 
 ## Estructura
 
+Todo lo que se publica está en `web/` (rutas de la tabla relativas a esa carpeta). Este README,
+`docs/` y `credenciales-panel.md` quedan fuera a propósito para que Netlify no los sirva.
+
 | Archivo | Qué hace |
 |---|---|
 | `index.html` | Página completa |
@@ -99,7 +103,7 @@ agencia) tiene que hacerlo el backend: aquí solo se simula.
 | `admin.html`, `js/admin.js`, `css/admin.css` | Panel del agente |
 | `data/countries.js` | Siluetas de países (Natural Earth, dominio público) para el globo y el mapa |
 | `vendor/` | globe.gl 2.34.4 y qrcode-generator 1.4.4 (licencia MIT), servidos en local |
-| `img/` | Fotos de destinos de Wikimedia Commons (ver `img/CREDITS.md`) |
+| `img/` | Fotos de destinos de Wikimedia Commons (créditos en `legal.html#creditos` y en `docs/CREDITS-fotos.md`) |
 
 ## Conexión con GrupoVDT (pendiente)
 

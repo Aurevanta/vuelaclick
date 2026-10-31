@@ -1,0 +1,222 @@
+[
+  {
+    "id": "F-0001", "phase": "P4-SEC", "category": "OWASP-A07-Identification-and-Authentication-Failures", "severity": "P1",
+    "title": "El acceso al panel se comprueba solo en el navegador y se salta con una línea",
+    "location": { "file": "web/js/admin.js", "line_start": 18, "line_end": 26, "function": "ADMINS / sessionAdmin / unlock" },
+    "evidence": "sessionStorage.setItem('vc.adminSession','juan@vuelaclic.com'); location.reload()  -> el panel se abre sin contraseña. Los hashes SHA-256 de las contraseñas, con sal fija, están en el JS público.",
+    "impact": "En la demo solo expone datos simulados del propio navegador. En producción, cualquiera vería y modificaría reservas, clientes y ajustes; además, los hashes publicados permiten probar contraseñas sin límite fuera de línea.",
+    "exploit_poc": "Abrir /admin.html, consola: sessionStorage.setItem('vc.adminSession','juan@vuelaclic.com'); recargar.",
+    "fix_strategy": "Para producción: autenticación en el backend (sesión con cookie HttpOnly/Secure/SameSite o JWT de corta vida), contraseñas con Argon2id/bcrypt, límite de intentos y 2FA para el administrador. Retirar los hashes del cliente. Para la demo: aceptar el riesgo y documentarlo.",
+    "fix_effort_minutes": 480, "regression_risk": "medium", "requires_user_decision": true, "verified": true,
+    "references": ["https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/", "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"]
+  },
+  {
+    "id": "F-0002", "phase": "P6-UX-A11Y", "category": "WCAG-2.4.3-Focus-Order", "severity": "P1",
+    "title": "El foco del teclado se pierde al elegir asiento, abrir detalles o elegir vuelo",
+    "location": { "file": "web/js/app.js", "line_start": 0, "line_end": 0, "function": "renderBooking / renderOffers (se reescribe innerHTML)" },
+    "evidence": "Tras enfocar un asiento y pulsarlo, document.activeElement pasa a BODY. Igual con 'Ver detalles' y 'Elegir' en los resultados.",
+    "impact": "Quien navega con teclado o lector de pantalla vuelve al principio de la página después de cada acción; reservar se vuelve casi imposible.",
+    "exploit_poc": "",
+    "fix_strategy": "Tras cada render, devolver el foco al elemento equivalente (por data-seat, data-id + data-act) o actualizar solo el nodo cambiado en lugar de reescribir el contenedor.",
+    "fix_effort_minutes": 60, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html"]
+  },
+  {
+    "id": "F-0003", "phase": "P15-RELEASE", "category": "Release-Blockers", "severity": "P1",
+    "title": "Elementos de demo que impiden publicar la web como real",
+    "location": { "file": "netlify.toml / web/index.html / web/legal.html / web/js/app.js", "line_start": 0, "line_end": 0, "function": "" },
+    "evidence": "X-Robots-Tag: noindex, nofollow en todas las páginas; botón 'Rellenar con datos de prueba'; avisos 'Versión de demostración'; datos de empresa [en amarillo] en legal.html; proveedor 'mock' y cobros simulados.",
+    "impact": "Si se publica tal cual como web real: no aparece en Google, los textos legales están incompletos y no se cobra ni se reserva nada.",
+    "exploit_poc": "",
+    "fix_strategy": "Checklist de lanzamiento: quitar noindex, retirar ayudas de demo, completar y revisar textos legales con abogado, conectar GrupoVDT, pasarela de pago y Fliinow en el backend.",
+    "fix_effort_minutes": 0, "regression_risk": "low", "requires_user_decision": true, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0004", "phase": "P12-PRIVACY", "category": "GDPR-Art32-Security-of-Processing", "severity": "P1",
+    "title": "Datos personales y documentos de identidad guardados en el navegador",
+    "location": { "file": "web/js/accounts.js, web/js/api.js", "line_start": 0, "line_end": 0, "function": "VC.store (localStorage vc.users, vc.bookings)" },
+    "evidence": "vc.users y vc.bookings guardan nombre, email, teléfono, fecha de nacimiento y DNI/NIE/pasaporte en texto claro en localStorage. Contraseñas: SHA-256 con sal fija.",
+    "impact": "Aceptable en la demo (datos inventados, solo en el equipo). En producción, cualquier script de terceros o persona con acceso al equipo leería los datos; incumpliría el art. 32 RGPD.",
+    "exploit_poc": "localStorage.getItem('vc.bookings')",
+    "fix_strategy": "En producción, todo en el backend; el navegador solo guarda la sesión (cookie HttpOnly). Contraseñas con Argon2id/bcrypt y sal por usuario.",
+    "fix_effort_minutes": 0, "regression_risk": "medium", "requires_user_decision": true, "verified": true,
+    "references": ["https://gdpr-info.eu/art-32-gdpr/"]
+  },
+  {
+    "id": "F-0005", "phase": "P11-INFRA", "category": "Security-Headers", "severity": "P2",
+    "title": "Faltan cabeceras de seguridad en Netlify",
+    "location": { "file": "netlify.toml", "line_start": 6, "line_end": 10, "function": "" },
+    "evidence": "La respuesta en vivo solo trae Strict-Transport-Security y X-Robots-Tag. No hay Content-Security-Policy, X-Frame-Options/frame-ancestors, X-Content-Type-Options, Referrer-Policy ni Permissions-Policy.",
+    "impact": "Sin CSP, una inyección futura no tendría barrera; sin frame-ancestors, la web (y el panel) se puede incrustar en otra página para clickjacking.",
+    "exploit_poc": "<iframe src='https://vuelaclick.netlify.app/admin.html'>",
+    "fix_strategy": "Añadir en netlify.toml: CSP con default-src 'self' y los orígenes de Google Fonts; frame-ancestors 'none'; X-Content-Type-Options nosniff; Referrer-Policy strict-origin-when-cross-origin; Permissions-Policy mínima. Probar que el globo (WebGL, blob workers) sigue funcionando.",
+    "fix_effort_minutes": 45, "regression_risk": "medium", "requires_user_decision": false, "verified": true,
+    "references": ["https://developer.mozilla.org/docs/Web/HTTP/CSP", "https://docs.netlify.com/routing/headers/"]
+  },
+  {
+    "id": "F-0006", "phase": "P4-SEC", "category": "Information-Disclosure", "severity": "P2",
+    "title": "El README interno se publica en la web con credenciales de demo",
+    "location": { "file": "web/README.md", "line_start": 42, "line_end": 76, "function": "" },
+    "evidence": "https://vuelaclick.netlify.app/README.md responde 200 e incluye agencia@vuelaclic.com / juan2026, la cuenta de prueba y cómo se calculan los hashes del panel.",
+    "impact": "Cualquiera con el enlace ve el guion interno de la demo y las claves de demostración.",
+    "exploit_poc": "curl https://vuelaclick.netlify.app/README.md",
+    "fix_strategy": "Mover README.md a la raíz del repositorio (fuera de web/) o excluirlo con una regla de Netlify (redirect 404).",
+    "fix_effort_minutes": 10, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0007", "phase": "P6-UX-A11Y", "category": "WCAG-1.4.3-Contrast", "severity": "P2",
+    "title": "Textos con contraste insuficiente",
+    "location": { "file": "web/css/styles.css", "line_start": 0, "line_end": 0, "function": ".btn-wa, .track .direct, .pt sup, .booking-steps li, .row-n" },
+    "evidence": "Medido: botón 'Escribir por WhatsApp' 2,87:1; 'Directo' 3,35:1; '+1' 3,68:1; pasos pendientes de la reserva 2,37:1 y hechos 3,35:1; números de fila del avión 2,30:1; modo noche 'Solo ida' 3,39:1 (mínimo 4,5:1).",
+    "impact": "Difícil de leer para personas con baja visión y en el móvil al sol.",
+    "exploit_poc": "",
+    "fix_strategy": "Oscurecer verde (#0B7A50), rojo (#B7342A) y grises (#6B7A99) en texto pequeño; botón WhatsApp #128C4A o texto en negrita mayor.",
+    "fix_effort_minutes": 30, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"]
+  },
+  {
+    "id": "F-0008", "phase": "P3-QUALITY", "category": "Functional-Inconsistency", "severity": "P2",
+    "title": "La web anuncia la financiación aunque el panel la desactive",
+    "location": { "file": "web/js/app.js", "line_start": 725, "line_end": 728, "function": "finText" },
+    "evidence": "if (price < 300) return ''; return 'o 100 € hoy y 6 cuotas de …'  -> no consulta VC.settings (pay.fin ni finMin). También explorer.js:102 usa 300 fijo, y la portada y la calculadora siempre muestran cuotas.",
+    "impact": "Si la agencia desactiva Fliinow o sube el mínimo, los resultados siguen prometiendo cuotas que luego no aparecen al pagar: publicidad engañosa y frustración del cliente.",
+    "exploit_poc": "Panel > Ajustes > desactivar Financiación > buscar vuelos: las tarjetas siguen diciendo 'o 100 € hoy y 6 cuotas'.",
+    "fix_strategy": "Una función única canFinance(price) que lea VC.settings y la usen finText, el explorador, la calculadora y los textos de portada.",
+    "fix_effort_minutes": 40, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0009", "phase": "P6-UX-A11Y", "category": "WCAG-4.1.3-Status-Messages", "severity": "P2",
+    "title": "Toda la sección de resultados es una región aria-live",
+    "location": { "file": "web/index.html", "line_start": 206, "line_end": 206, "function": "section#resultados" },
+    "evidence": "<section class=\"results\" id=\"resultados\" hidden aria-live=\"polite\">",
+    "impact": "Los lectores de pantalla leen decenas de tarjetas cada vez que se filtra u ordena.",
+    "exploit_poc": "",
+    "fix_strategy": "Quitar aria-live de la sección y anunciar solo un resumen ('15 vuelos, desde 615 €') en un elemento de estado pequeño.",
+    "fix_effort_minutes": 15, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html"]
+  },
+  {
+    "id": "F-0010", "phase": "P12-PRIVACY", "category": "GDPR-Third-Party-Transfer", "severity": "P2",
+    "title": "Google Fonts se carga desde los servidores de Google",
+    "location": { "file": "web/index.html, web/legal.html, web/admin.html", "line_start": 9, "line_end": 13, "function": "" },
+    "evidence": "6 peticiones a fonts.googleapis.com / fonts.gstatic.com en la portada.",
+    "impact": "Cada visita envía la IP del usuario a Google sin consentimiento; un tribunal alemán (LG München, 20/01/2022) lo consideró contrario al RGPD. Ya está declarado en la política de cookies.",
+    "exploit_poc": "",
+    "fix_strategy": "Descargar las fuentes (woff2) y servirlas desde /fonts con @font-face; además ahorra una conexión externa.",
+    "fix_effort_minutes": 40, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://rewis.io/urteile/urteil/lhm-20-01-2022-3-o-1749320/"]
+  },
+  {
+    "id": "F-0011", "phase": "P12-PRIVACY", "category": "Consumer-Credit-Advertising", "severity": "P2",
+    "title": "Publicidad de 'cuotas sin intereses' sin ejemplo representativo",
+    "location": { "file": "web/index.html", "line_start": 0, "line_end": 0, "function": "hero-perks, sección Financiación, tarjetas de oferta" },
+    "evidence": "'Hasta 12 cuotas sin intereses', 'o 100 € hoy y 6 cuotas de …'.",
+    "impact": "La publicidad de crédito al consumo con cifras puede exigir información básica (TIN, TAE, importe total, prestamista). Riesgo de sanción de consumo.",
+    "exploit_poc": "",
+    "fix_strategy": "Validar con Fliinow y el asesor legal el texto obligatorio y añadir un ejemplo representativo junto a los mensajes de cuotas.",
+    "fix_effort_minutes": 30, "regression_risk": "low", "requires_user_decision": true, "verified": false,
+    "references": ["https://www.boe.es/buscar/act.php?id=BOE-A-2011-10970"]
+  },
+  {
+    "id": "F-0012", "phase": "P6-UX", "category": "Branding", "severity": "P3",
+    "title": "No hay favicon: la pestaña muestra el icono de Netlify",
+    "location": { "file": "web/", "line_start": 0, "line_end": 0, "function": "" },
+    "evidence": "/favicon.ico devuelve el icono por defecto de Netlify (15 KB) en vivo y 404 en local. Sin apple-touch-icon ni manifest.",
+    "impact": "La marca no aparece en pestañas, marcadores ni al añadir la web a la pantalla del móvil.",
+    "exploit_poc": "",
+    "fix_strategy": "Favicon SVG con la 'V' del logo, PNG 180x180 para iOS y manifest.webmanifest.",
+    "fix_effort_minutes": 25, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0013", "phase": "P13-SEO", "category": "SEO-Metadata", "severity": "P3",
+    "title": "Faltan metadatos para compartir y para buscadores",
+    "location": { "file": "web/index.html", "line_start": 1, "line_end": 20, "function": "<head>" },
+    "evidence": "Sin og:title/og:image/twitter:card, sin link rel=canonical, sin JSON-LD (TravelAgency), sin robots.txt ni sitemap.xml.",
+    "impact": "Al compartir el enlace por WhatsApp o Facebook no sale imagen ni descripción cuidada; peor posicionamiento cuando se quite el noindex.",
+    "exploit_poc": "",
+    "fix_strategy": "Añadir Open Graph con una imagen 1200x630 de marca, canonical, JSON-LD TravelAgency con teléfono y horario, robots.txt y sitemap.xml (al lanzar).",
+    "fix_effort_minutes": 40, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://ogp.me/", "https://schema.org/TravelAgency"]
+  },
+  {
+    "id": "F-0014", "phase": "P3-QUALITY", "category": "Validation", "severity": "P3",
+    "title": "Multidestino no valida que cada tramo salga después del anterior",
+    "location": { "file": "web/js/app.js", "line_start": 426, "line_end": 435, "function": "validate" },
+    "evidence": "validate() comprueba fecha >= hoy por tramo, pero no legs[i].date >= legs[i-1].date. El input tiene min, pero una fecha escrita a mano se acepta.",
+    "impact": "Se puede buscar y reservar un itinerario imposible.",
+    "exploit_poc": "Multidestino: tramo 1 el 10/12, escribir a mano 20/11 en el tramo 2 y buscar.",
+    "fix_strategy": "En validate(): si i > 0 y l.date < legs[i-1].date, devolver 'El tramo N tiene que salir el mismo día o después del anterior.'",
+    "fix_effort_minutes": 10, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0015", "phase": "P3-QUALITY", "category": "Date-Timezone", "severity": "P3",
+    "title": "Fechas calculadas en UTC en 'Mis viajes'",
+    "location": { "file": "web/js/account-ui.js", "line_start": 102, "line_end": 102, "function": "profileView" },
+    "evidence": "var today = new Date().toISOString().slice(0, 10);  (también accounts.js:121)",
+    "impact": "Entre las 00:00 y las 01:00/02:00 en España, 'hoy' es el día anterior y un viaje puede salir como próximo o pasado por error.",
+    "exploit_poc": "",
+    "fix_strategy": "Usar el helper iso() de fecha local que ya existe en app.js.",
+    "fix_effort_minutes": 10, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0016", "phase": "P3-QUALITY", "category": "Maintainability-Duplication", "severity": "P3",
+    "title": "Utilidades duplicadas y app.js demasiado grande",
+    "location": { "file": "web/js/*.js", "line_start": 0, "line_end": 0, "function": "esc, iso, $, money, icon" },
+    "evidence": "esc/iso/$/money repetidos en app.js, admin.js, account-ui.js, explorer.js y assistant.js; app.js tiene 1481 líneas (buscador, resultados, reserva, billete, tema, cuenta).",
+    "impact": "Un arreglo en una copia no llega a las demás (ya pasó con las fechas en UTC).",
+    "exploit_poc": "",
+    "fix_strategy": "Crear js/utils.js con las utilidades comunes y partir app.js en search.js, results.js y booking.js (sin build, mismo patrón VC.*).",
+    "fix_effort_minutes": 120, "regression_risk": "medium", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0017", "phase": "P3-QUALITY", "category": "Maintainability-Duplication", "severity": "P3",
+    "title": "El símbolo del logo está copiado en tres páginas",
+    "location": { "file": "web/index.html, web/legal.html, web/admin.html", "line_start": 0, "line_end": 0, "function": "symbol#vc-logo" },
+    "evidence": "Mismo <symbol id=\"vc-logo\"> en los tres HTML.",
+    "impact": "Cambiar el logo exige tocar tres sitios; es fácil que acaben distintos.",
+    "exploit_poc": "",
+    "fix_strategy": "Convertir el texto del logo a trazados y servirlo como img/logo.svg (una sola fuente), o inyectar el sprite desde un JS común.",
+    "fix_effort_minutes": 45, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  },
+  {
+    "id": "F-0018", "phase": "P5-PERF", "category": "Images", "severity": "P3",
+    "title": "Fotos de destinos sin tamaños adaptados ni formatos modernos",
+    "location": { "file": "web/img/*.jpg, web/js/app.js renderDestinations", "line_start": 0, "line_end": 0, "function": "" },
+    "evidence": "9 JPEG de 960 px (150–280 KB, 1,8 MB en total). Ya usan loading=lazy, pero en móvil se descarga la versión grande para tarjetas de ~170 px.",
+    "impact": "Más datos y más espera en móvil con mala cobertura.",
+    "exploit_poc": "",
+    "fix_strategy": "Generar 480 y 960 px en WebP/AVIF con fallback JPEG y usar srcset + sizes.",
+    "fix_effort_minutes": 40, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://web.dev/articles/serve-responsive-images"]
+  },
+  {
+    "id": "F-0019", "phase": "P6-UX-A11Y", "category": "ARIA-Tabs-Pattern", "severity": "P3",
+    "title": "Las pestañas no se manejan con las flechas del teclado",
+    "location": { "file": "web/js/app.js, web/js/seats.js, web/admin.html", "line_start": 0, "line_end": 0, "function": "role=tablist (tramos, ordenar, asientos, filtros del panel)" },
+    "evidence": "Botones con role=tab sin gestión de ArrowLeft/ArrowRight, sin aria-controls ni tabpanel.",
+    "impact": "El patrón anunciado por el lector de pantalla no se comporta como promete.",
+    "exploit_poc": "",
+    "fix_strategy": "Añadir navegación con flechas y tabindex itinerante, o quitar role=tab y usar botones con aria-pressed.",
+    "fix_effort_minutes": 45, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": ["https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"]
+  },
+  {
+    "id": "F-0020", "phase": "P6-UX", "category": "Broken-UX-Link", "severity": "P3",
+    "title": "El enlace de créditos de fotos abre un archivo .md en bruto",
+    "location": { "file": "web/index.html", "line_start": 413, "line_end": 413, "function": "footer" },
+    "evidence": "<a href=\"img/CREDITS.md\">créditos</a>",
+    "impact": "Se ve texto con tablas Markdown sin formato o se descarga el archivo.",
+    "exploit_poc": "",
+    "fix_strategy": "Pasar los créditos a una sección de legal.html (o a una página HTML) y enlazarla.",
+    "fix_effort_minutes": 15, "regression_risk": "low", "requires_user_decision": false, "verified": true,
+    "references": []
+  }
+]
