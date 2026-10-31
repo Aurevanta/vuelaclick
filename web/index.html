@@ -25,11 +25,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;800&text=uelaCicTKETSONÓMI&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script>
-    // Tema antes de pintar: la elección guardada manda; si no hay, la del sistema
+    // Cielo y tema antes de pintar. El cielo sigue la hora real del visitante
+    // (amanecer, día, atardecer, noche); ?cielo=atardecer lo fuerza para enseñarlo.
+    // El tema guardado con el botón manda; si no hay, de noche se pone el modo noche.
     (function () {
+      var h = new Date().getHours();
+      var sky = h >= 6 && h < 9 ? 'dawn' : h < 18 && h >= 9 ? 'day' : h >= 18 && h < 21 ? 'dusk' : 'night';
+      var force = { amanecer: 'dawn', dia: 'day', atardecer: 'dusk', noche: 'night' }[new URLSearchParams(location.search).get('cielo')];
+      if (force) sky = force;
+      document.documentElement.dataset.sky = sky;
       var t = null;
       try { t = JSON.parse(localStorage.getItem('vc.theme')); } catch (e) {}
-      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      if (force || !t) t = sky === 'night' ? 'night' : 'day';
       if (t === 'night') document.documentElement.dataset.theme = 'night';
     })();
   </script>
@@ -112,6 +119,14 @@
     </button>
   </div>
 </header>
+
+<!-- Ruta de vuelo que avanza con el scroll: margen derecho en pantallas anchas,
+     línea bajo la cabecera en las demás (la coloca js/app.js) -->
+<div class="flight-progress" id="flight-progress" aria-hidden="true">
+  <svg class="fp-svg"><path class="fp-route"/><path class="fp-trail" pathLength="1"/></svg>
+  <span class="fp-end"></span>
+  <span class="fp-plane"><svg viewBox="0 0 24 24"><use href="#i-plane"/></svg></span>
+</div>
 
 <main>
   <section class="hero" aria-labelledby="hero-title">

@@ -52,6 +52,21 @@
     }
     return null;
   }
+  // Importe que rueda desde el valor que se veía hasta el nuevo (como un marcador)
+  function rollMoney(el, to, fmt) {
+    fmt = fmt || money;
+    var from = typeof el._cur === 'number' ? el._cur : to;
+    cancelAnimationFrame(el._raf);
+    if (from === to || reducedMotion()) { el._cur = to; el.textContent = fmt(to); return; }
+    var t0 = performance.now(), dur = 600;
+    (function step(now) {
+      var k = Math.min(1, (now - t0) / dur);
+      el._cur = from + (to - from) * (1 - Math.pow(1 - k, 3));
+      el.textContent = fmt(k < 1 ? el._cur : to);
+      if (k < 1) el._raf = requestAnimationFrame(step); else el._cur = to;
+    })(t0);
+  }
+
   function restoreFocus(key, fallback) {
     var el = key && $(key);
     // un control desactivado no recibe el foco (p. ej. ese asiento está ocupado en el vuelo siguiente)
@@ -901,7 +916,7 @@
       setTimeout(function () { var i = $('#legs input'); if (i) i.focus({ preventScroll: true }); }, 400);
     });
 
-    $('#sel-continue').addEventListener('click', openBooking);
+    $('#sel-continue').addEventListener('click', openBookingAnimated);
   }
 
   function switchLeg(i) {
@@ -931,7 +946,7 @@
         '<span>' + (o ? clock(o.depMin) + ', ' + VC.AIRLINES[o.airline].name : 'Sin elegir') + '</span></div>';
     }).join('');
     var total = search.selected.reduce(function (s, o) { return s + (o ? o.price : 0); }, 0);
-    $('#sel-total').textContent = money(total);
+    rollMoney($('#sel-total'), total);
     var pc = paxCount(search.params.pax);
     $('#sel-pax').textContent = plural(pc, 'viajero', 'viajeros');
     $('#sel-continue').disabled = !search.selected.every(Boolean);
@@ -939,6 +954,27 @@
 
   // ---------- Reserva ----------
   var booking = null;
+
+  // La tarjeta de embarque elegida (o la barra de selección) se transforma en la
+  // ventana de reserva con la View Transitions API. Sin soporte, se abre como siempre.
+  function openBookingAnimated() {
+    if (!document.startViewTransition || reducedMotion()) { openBooking(); return; }
+    var from = $('.offer.is-selected');
+    var r = from && from.getBoundingClientRect();
+    if (!r || r.bottom < 0 || r.top > innerHeight) from = $('#selection-bar');
+    var dlg = $('#booking');
+    from.style.viewTransitionName = 'ticket';
+    dlg.classList.add('vt-open');
+    var t = document.startViewTransition(function () {
+      from.style.viewTransitionName = '';
+      openBooking();
+      dlg.style.viewTransitionName = 'ticket';
+    });
+    t.finished.finally(function () {
+      dlg.style.viewTransitionName = '';
+      dlg.classList.remove('vt-open');
+    });
+  }
 
   function openBooking() {
     booking = {
@@ -1024,7 +1060,7 @@
     lines += '<div><span>Tasas de aeropuerto</span><span>Incluidas</span></div>';
     var seats = VC.seats.total(booking);
     if (seats) lines += '<div><span>Asientos elegidos</span><span>' + money(seats) + '</span></div>';
-    lines += '<div class="total"><span>Total</span><span>' + money(booking.total) + '</span></div>';
+    lines += '<div class="total"><span>Total</span><span data-roll="total">' + money(booking.total) + '</span></div>';
     return '<div class="price-lines">' + lines + '</div>';
   }
 
@@ -1098,6 +1134,15 @@
         '</ol><div id="ticket-slot"></div>';
       runFlow();
     }
+    // los importes de la reserva ruedan desde lo que se veía en el paso anterior
+    booking.shown = booking.shown || {};
+    $$('[data-roll]', body).forEach(function (el) {
+      var key = el.dataset.roll;
+      var to = key === 'total' ? booking.total : VC.seats.total(booking);
+      el._cur = key in booking.shown ? booking.shown[key] : to;
+      rollMoney(el, to, key === 'seats' ? function (v) { return Math.round(v) ? money(v) : 'Sin coste'; } : money);
+      booking.shown[key] = to;
+    });
   }
 
   function payOption(value, ic, title, sub) {
@@ -1226,7 +1271,11 @@
       (t.surname + '/' + t.name).toUpperCase()].join('|'));
     $('#booking-title').textContent = booking.method === 'transfer' ? 'Plaza bloqueada' : '¡Buen viaje!';
     $('#booking-body h3').textContent = booking.method === 'transfer' ? 'Te esperamos con la transferencia' : 'Tu billete está emitido';
-    $('#ticket-slot').innerHTML = '<div class="ticket" role="group" aria-label="Billete">' +
+    // sello de pasaporte que se estampa cuando el billete termina de imprimirse
+    var stampDate = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()).replace(/\./g, '').toUpperCase();
+    var stamp = '<div class="stamp' + (booking.method === 'transfer' ? ' is-pending' : '') + '" aria-hidden="true">' +
+      '<strong>' + (booking.method === 'transfer' ? 'RESERVADO' : 'EMITIDO') + '</strong><span>' + first.from + ' · ' + stampDate + '</span></div>';
+    $('#ticket-slot').innerHTML = '<div class="ticket" role="group" aria-label="Billete">' + stamp +
       '<div class="ticket-top">' +
         '<div class="ticket-row"><div><small>Localizador</small><span class="loc">' + res.locator + '</span></div>' +
         '<div style="text-align:right"><small>Pasajero</small><strong>' + esc((t.name + ' ' + t.surname).trim() || 'Viajero') + (booking.travellers.length > 1 ? ' +' + (booking.travellers.length - 1) : '') + '</strong></div></div>' +
@@ -1388,7 +1437,7 @@
       var price = +range.value;
       var plan = +$('input[name=calc-plan]:checked').value;
       $('#calc-price-out').textContent = money(price);
-      $('#calc-monthly').textContent = cents((price - 100) / plan);
+      rollMoney($('#calc-monthly'), (price - 100) / plan, cents);
       range.style.setProperty('--p', ((price - range.min) / (range.max - range.min) * 100) + '%');
     }
     range.addEventListener('input', update);
@@ -1440,6 +1489,50 @@
       apply(night);
       VC.store.set('theme', night ? 'night' : 'day');
     });
+  }
+
+  // ---------- Ruta de vuelo que avanza con el scroll ----------
+  // El avance lo lleva CSS (animation-timeline: scroll()); aquí solo se dibuja la ruta
+  // a la medida de la pantalla. Navegadores sin esa función: --p desde JavaScript.
+  function bindFlight() {
+    var fp = $('#flight-progress');
+    var svg = $('.fp-svg', fp), route = $('.fp-route', fp), trail = $('.fp-trail', fp), plane = $('.fp-plane', fp);
+    function layout() {
+      // en vertical por el margen derecho solo si hay hueco fuera del contenido
+      var vertical = window.innerWidth >= 1360;
+      // dentro de la cabecera no vale position: fixed (su backdrop-filter crea otro contexto)
+      var host = vertical ? document.body : $('.site-header');
+      if (fp.parentNode !== host) host.appendChild(fp);
+      fp.classList.toggle('is-vertical', vertical);
+      var w = fp.clientWidth, h = fp.clientHeight, d;
+      if (vertical) {
+        // curvas suaves alternando a izquierda y derecha, de arriba abajo
+        var n = 4, seg = h / n, mid = w / 2;
+        d = 'M' + mid + ' 0';
+        for (var i = 0; i < n; i++) {
+          var x = i % 2 ? w * .12 : w * .88;
+          d += ' C' + x + ' ' + (seg * i + seg * .3) + ',' + x + ' ' + (seg * i + seg * .7) + ',' + mid + ' ' + seg * (i + 1);
+        }
+      } else {
+        d = 'M10 ' + h / 2 + ' L' + (w - 10) + ' ' + h / 2;
+      }
+      svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+      route.setAttribute('d', d);
+      trail.setAttribute('d', d);
+      plane.style.offsetPath = 'path("' + d + '")';
+    }
+    layout();
+    window.addEventListener('resize', layout);
+    if (!(window.CSS && CSS.supports('animation-timeline: scroll()'))) {
+      var ticking = false;
+      var update = function () {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        fp.style.setProperty('--p', max > 0 ? Math.min(1, window.scrollY / max) : 0);
+        ticking = false;
+      };
+      window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+      update();
+    }
   }
 
   // ---------- Cabecera: el logo se encoge al bajar ----------
@@ -1511,6 +1604,7 @@
   // ---------- Arranque ----------
   bindTheme();
   bindHeader();
+  bindFlight();
   renderNotice();
   bindAccount();
   renderLegs();

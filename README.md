@@ -60,6 +60,10 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 | Billete con QR, envío por WhatsApp y archivo de calendario | Reserva |
 | Mapa «¿A dónde puedo ir con X €?» en precio total o cuota mensual | Portada |
 | Modo noche (luna y estrellas en el cielo) | Botón de la cabecera |
+| Cielo según la hora del visitante (amanecer 6–9 h, día, atardecer 18–21 h, noche). Para enseñarlo en la demo: `?cielo=amanecer`, `?cielo=atardecer` o `?cielo=noche` | Portada |
+| Ruta de vuelo que avanza con el scroll (CSS scroll-driven animations): margen derecho desde 1360 px, línea bajo la cabecera en pantallas menores | Toda la portada |
+| La tarjeta elegida se transforma en la ventana de reserva (View Transitions API) | Botón «Continuar» |
+| Totales que ruedan al cambiar y sello «EMITIDO» en el billete | Barra de selección, reserva, calculadora |
 | Aviso legal, condiciones de contratación, privacidad y cookies (borrador: los datos en amarillo están por completar y debe revisarlo un abogado) | `legal.html`, enlazada en el pie, el registro y el paso de pago |
 | Registro, acceso, «Mis viajes», datos y viajeros guardados | Botón «Entrar» de la cabecera |
 | Panel del agente: ventas, margen, deuda con VDT, cobros pendientes | `admin.html` |

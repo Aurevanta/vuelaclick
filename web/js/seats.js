@@ -110,7 +110,7 @@
     container.innerHTML = '<h3>Elige dónde te sientas</h3>' + tabs + who +
       '<div class="seat-layout"><div class="plane"><div class="plane-nose"><span>' + cur.seg.number + ', ' + lay.name + '</span></div>' +
       '<div class="seat-grid">' + grid + '</div></div><ul class="seat-legend">' + legend + '</ul></div>' +
-      '<div class="price-lines"><div><span>Asientos</span><span>' + (total(booking) ? total(booking) + ' €' : 'Sin coste') + '</span></div></div>' +
+      '<div class="price-lines"><div><span>Asientos</span><span data-roll="seats">' + (total(booking) ? total(booking) + ' €' : 'Sin coste') + '</span></div></div>' +
       '<div class="booking-actions"><button type="button" class="back-btn" data-back><svg class="ic"><use href="#i-arrow"/></svg>Volver</button>' +
       '<span class="seat-actions"><button type="button" class="link" data-skip-seats>Saltar, me lo asignan gratis al facturar</button>' +
       '<button type="button" class="btn btn-sun" data-next>Ir al pago</button></span></div>';
