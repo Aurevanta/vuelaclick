@@ -3,6 +3,8 @@
 Muestra de la web de la agencia con buscador de vuelos y un simulador que devuelve
 ofertas verosímiles. No hay backend: son HTML, CSS y JavaScript estáticos.
 La auditoría de calidad y su plan de arreglos están en `docs/auditoria/`.
+El proyecto sigue SDD (Spec-Driven Development): constitución en `.specify/memory/constitution.md`
+y especificaciones en `specs/` (ver `CLAUDE.md`).
 
 ## Cómo abrirla
 
