@@ -10,6 +10,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // Tema antes de pintar: la elección guardada manda; si no hay, la del sistema
+    (function () {
+      var t = null;
+      try { t = JSON.parse(localStorage.getItem('vc.theme')); } catch (e) {}
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day';
+      if (t === 'night') document.documentElement.dataset.theme = 'night';
+    })();
+  </script>
 </head>
 <body>
 
@@ -60,13 +69,18 @@
     <a class="header-wa" href="https://wa.me/34647778336" target="_blank" rel="noopener">
       <svg class="ic"><use href="#i-whatsapp"/></svg><span>647 778 336</span>
     </a>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Modo noche" aria-pressed="false">
+      <span class="toggle-knob"></span>
+    </button>
   </div>
 </header>
 
 <main>
   <section class="hero" aria-labelledby="hero-title">
     <div class="sky" aria-hidden="true">
+      <div class="stars" id="stars"><span class="shooting"></span><span class="shooting"></span></div>
       <div class="sun"></div>
+      <div class="moon"></div>
       <div class="cloud-layer far"><i></i><i></i><i></i><i></i></div>
       <svg class="flight-path" viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice">
         <path id="route" d="M-40 560 C 260 520, 420 300, 760 280 S 1240 120, 1500 60" fill="none"/>

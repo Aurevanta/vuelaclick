@@ -1297,6 +1297,44 @@
     $('#marquee').innerHTML = pills + pills;
   }
 
+  // ---------- Modo noche ----------
+  function bindTheme() {
+    var root = document.documentElement;
+    var btn = $('#theme-toggle');
+    var meta = $('meta[name=theme-color]');
+
+    // estrellas con tamaño, brillo y ritmo distintos; más densas arriba
+    var stars = $('#stars');
+    var html = '';
+    for (var i = 0; i < 90; i++) {
+      var y = Math.pow(Math.random(), 1.6) * 85;
+      html += '<i style="left:' + (Math.random() * 100).toFixed(2) + '%;top:' + y.toFixed(2) + '%;' +
+        '--s:' + (Math.random() < .12 ? 3 : Math.random() < .5 ? 2 : 1.2) + 'px;' +
+        '--t:' + (2 + Math.random() * 4).toFixed(1) + 's;--d:-' + (Math.random() * 6).toFixed(1) + 's"></i>';
+    }
+    stars.insertAdjacentHTML('beforeend', html);
+
+    function apply(night) {
+      if (night) root.dataset.theme = 'night'; else delete root.dataset.theme;
+      btn.setAttribute('aria-pressed', String(night));
+      btn.setAttribute('aria-label', night ? 'Modo día' : 'Modo noche');
+      btn.title = night ? 'Volver al modo día' : 'Activar modo noche';
+      meta.setAttribute('content', night ? '#030A22' : '#0A2463');
+    }
+    apply(root.dataset.theme === 'night');
+
+    btn.addEventListener('click', function () {
+      var night = root.dataset.theme !== 'night';
+      if (!reducedMotion()) {
+        root.classList.add('theme-anim');
+        clearTimeout(bindTheme.t);
+        bindTheme.t = setTimeout(function () { root.classList.remove('theme-anim'); }, 800);
+      }
+      apply(night);
+      VC.store.set('theme', night ? 'night' : 'day');
+    });
+  }
+
   // ---------- API para el asistente y el explorador ----------
   VC.app = {
     searchTrip: function (o) {
@@ -1322,6 +1360,7 @@
   };
 
   // ---------- Arranque ----------
+  bindTheme();
   renderLegs();
   renderPax();
   bindSearchForm();
