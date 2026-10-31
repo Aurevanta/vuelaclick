@@ -12,14 +12,35 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
-<body class="adm-body">
+<body class="adm-body is-locked">
+<script>try { if (sessionStorage.getItem('vc.adminSession')) document.body.classList.remove('is-locked'); } catch (e) {}</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-plane" viewBox="0 0 24 24"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></g></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></g></symbol>
+  <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.42 1.3-1.96 1.35-.5.05-.97.23-3.28-.68-2.77-1.09-4.53-3.93-4.67-4.11-.13-.18-1.11-1.48-1.11-2.82s.7-2 .95-2.27c.25-.27.54-.34.72-.34l.52.01c.17.01.39-.06.61.47.23.54.77 1.88.84 2.02.07.13.11.29.02.47-.09.18-.13.29-.27.45l-.4.47c-.13.13-.27.28-.12.55.16.27.7 1.15 1.5 1.86 1.03.92 1.9 1.2 2.17 1.34.27.13.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.52.32.07.11.07.66-.17 1.33z"/></symbol>
 </svg>
+
+<!-- Acceso: en producción lo valida el backend; aquí basta con la cuenta de demo -->
+<section class="adm-login" id="adm-login" aria-labelledby="login-title">
+  <form class="login-card" id="adm-login-form" novalidate>
+    <span class="logo-word">Vuela<b>Clic</b></span>
+    <span class="login-lock"><svg class="ic"><use href="#i-lock"/></svg></span>
+    <h1 id="login-title">Panel de agencia</h1>
+    <p class="card-sub">Solo para el equipo de VuelaClic.</p>
+    <label class="inp">Email<input type="email" name="email" required autocomplete="username"></label>
+    <label class="inp">Contraseña<input type="password" name="password" required autocomplete="current-password"></label>
+    <p class="form-error" id="login-error" hidden>El email o la contraseña no coinciden.</p>
+    <button type="submit" class="btn btn-sun login-submit">Entrar al panel</button>
+    <div class="login-demo"><span>Demo: <strong>agencia@vuelaclic.com</strong> · <strong>juan2026</strong></span>
+      <button type="button" class="link" id="login-fill">Rellenar</button></div>
+    <a class="login-back" href="index.html">← Volver a la web</a>
+  </form>
+</section>
 
 <header class="adm-head">
   <div class="wrap adm-head-row">
@@ -32,10 +53,13 @@
       <a href="#margen">Margen</a>
       <a href="#liquidacion">GrupoVDT</a>
       <a href="#reservas">Reservas</a>
+      <a href="#clientes">Clientes</a>
+      <a href="#ajustes">Ajustes</a>
     </nav>
     <div class="adm-user">
       <span class="agent-avatar small" aria-hidden="true">JG</span>
       <span><strong>Juan Gómez</strong><small>Agente de viajes</small></span>
+      <button type="button" class="adm-logout" id="adm-logout">Salir</button>
     </div>
   </div>
 </header>
@@ -104,15 +128,71 @@
     <p class="empty-row" id="bk-empty" hidden>No hay reservas con ese filtro.</p>
   </section>
 
+  <section class="card clients" id="clientes" aria-labelledby="cl-title">
+    <header class="card-head">
+      <div>
+        <h2 id="cl-title">Clientes</h2>
+        <p class="card-sub cl-stats" id="cl-stats"></p>
+      </div>
+      <div class="bk-tools">
+        <div class="bk-tabs" role="tablist" id="cl-tabs">
+          <button type="button" role="tab" data-f="all" aria-selected="true">Todos</button>
+          <button type="button" role="tab" data-f="web" aria-selected="false">Con cuenta en la web</button>
+          <button type="button" role="tab" data-f="news" aria-selected="false">Aceptan ofertas</button>
+        </div>
+        <label class="bk-search"><svg class="ic"><use href="#i-search"/></svg><span class="sr-only">Buscar cliente</span>
+          <input type="search" id="cl-q" placeholder="Nombre, email o teléfono"></label>
+      </div>
+    </header>
+    <div class="table-wrap">
+      <table class="bk-table">
+        <thead><tr>
+          <th scope="col">Cliente</th><th scope="col">Contacto</th><th scope="col">Alta</th><th scope="col">Origen</th>
+          <th scope="col" class="num">Reservas</th><th scope="col" class="num">Gastado</th><th scope="col">Último viaje</th><th scope="col"><span class="sr-only">Acciones</span></th>
+        </tr></thead>
+        <tbody id="cl-body"></tbody>
+      </table>
+    </div>
+    <p class="empty-row" id="cl-empty" hidden>No hay clientes con ese filtro.</p>
+    <p class="fine cl-export"><button type="button" class="link" id="cl-export">Descargar clientes que aceptan ofertas (CSV)</button></p>
+  </section>
+
+  <section class="adm-grid settings" id="ajustes" aria-label="Ajustes de la web">
+    <article class="card" aria-labelledby="pay-title">
+      <header class="card-head"><h2 id="pay-title">Formas de pago en la web</h2></header>
+      <p class="card-sub">Lo que desactives deja de aparecer al instante en el último paso de la reserva.</p>
+      <div class="switches" id="pay-switches"></div>
+      <label class="inp fin-min">Financiar a partir de
+        <span class="suffix-wrap"><input type="number" id="fin-min" min="100" max="2000" step="50"><span>€</span></span></label>
+    </article>
+    <article class="card" aria-labelledby="notice-title">
+      <header class="card-head"><h2 id="notice-title">Aviso en la web</h2></header>
+      <p class="card-sub">Una franja amarilla encima de la cabecera: ofertas, horarios de festivos…</p>
+      <label class="switch"><input type="checkbox" id="notice-on"><span class="switch-ui" aria-hidden="true"></span><span>Mostrar el aviso</span></label>
+      <label class="inp">Texto del aviso<input id="notice-text" maxlength="120" placeholder="Ej.: Navidad en Lima desde 899 € con maleta incluida"></label>
+      <div class="notice-preview" id="notice-preview" aria-hidden="true"></div>
+      <button type="button" class="btn btn-sun" id="notice-save">Publicar aviso</button>
+      <hr>
+      <h3 class="set-h3">Conexión de vuelos</h3>
+      <p class="provider"><span class="dot-live"></span><span><strong>Simulador de demostración</strong><small>Al recibir las credenciales de GrupoVDT se cambia en <code>js/api.js</code> sin tocar la web.</small></span></p>
+    </article>
+  </section>
+
   <p class="adm-foot fine">Demo con datos simulados. En producción estos datos vendrían del backend que conecta con GrupoVDT, la pasarela de pago y Fliinow.
     <button type="button" class="link" id="reset-demo">Reiniciar demo</button></p>
 </main>
+
+<dialog class="bk-dialog" id="bk-dialog" aria-labelledby="bkd-title">
+  <button type="button" class="icon-btn bkd-close" id="bkd-close" aria-label="Cerrar"><svg class="ic"><use href="#i-close"/></svg></button>
+  <div id="bkd-body"></div>
+</dialog>
 
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="js/data.js"></script>
 <script src="js/simulator.js"></script>
 <script src="js/api.js"></script>
+<script src="js/accounts.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>

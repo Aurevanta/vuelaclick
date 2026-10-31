@@ -41,6 +41,9 @@
   var toastTimer;
   function toast(msg) {
     var t = $('#toast');
+    // con una ventana abierta el aviso va dentro de ella, o quedaría tapado por el fondo
+    var host = $('#account').open ? $('#account') : $('#booking').open ? $('#booking') : document.body;
+    if (t.parentNode !== host) host.appendChild(t);
     t.textContent = msg;
     t.hidden = false;
     clearTimeout(toastTimer);
@@ -923,8 +926,37 @@
     for (var c = 0; c < booking.pax.chd; c++) types.push('chd');
     for (var b = 0; b < booking.pax.inf; b++) types.push('inf');
     booking.travellers = types.map(function (t) { return { type: t, name: '', surname: '', birth: '', docType: 'DNI', doc: '' }; });
+    prefillFromAccount();
     renderBooking();
     $('#booking').showModal();
+  }
+
+  // Con sesión iniciada, contacto y viajeros salen de la cuenta
+  function prefillFromAccount() {
+    var u = VC.auth.current();
+    if (!u || !booking) return;
+    if (!booking.contact.email) booking.contact = { email: u.email, phone: u.phone };
+    var pool = (u.travellers || []).slice().sort(function (a, b) {
+      var me = function (t) { return t.name === u.name && t.surname === u.surname ? 1 : 0; };
+      return me(b) - me(a);
+    });
+    booking.travellers.forEach(function (t, i) {
+      if (t.name) return;
+      for (var k = 0; k < pool.length; k++) {
+        if (pool[k].type === t.type) { Object.assign(t, pool.splice(k, 1)[0]); return; }
+      }
+      if (i === 0) { t.name = u.name; t.surname = u.surname; }
+    });
+  }
+
+  function accountBanner() {
+    var u = VC.auth.current();
+    if (u) {
+      return '<div class="acc-banner is-in"><span class="acc-avatar sm" aria-hidden="true">' + esc((u.name[0] + (u.surname[0] || '')).toUpperCase()) + '</span>' +
+        '<span>Reservas como <strong>' + esc(u.name + ' ' + u.surname) + '</strong>. Hemos rellenado lo que teníamos guardado.</span></div>';
+    }
+    return '<div class="acc-banner">' + icon('user') + '<span>¿Tienes cuenta? Entra y rellenamos tus datos.</span>' +
+      '<button type="button" class="btn btn-ghost btn-xs" data-acc-login>Entrar</button></div>';
   }
 
   function stepsState() {
@@ -974,6 +1006,7 @@
         '<div style="display:grid;gap:14px">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>¿Quién viaja?</h3>' +
         '<button type="button" class="link" data-fill>Rellenar con datos de prueba</button></div>' +
+        accountBanner() +
         booking.travellers.map(function (t, i) {
           return '<div class="pax-block"><h4>Viajero ' + (i + 1) + ', ' + typeName[t.type] + '</h4><div class="form-grid">' +
             '<label class="inp">Nombre<input required name="name" data-i="' + i + '" value="' + esc(t.name) + '" autocomplete="given-name"></label>' +
@@ -995,13 +1028,22 @@
     } else if (s === 2) {
       VC.seats.render(body, booking, booking.seatUi);
     } else if (s === 3) {
-      var fin = booking.total >= 300;
+      // la agencia activa o desactiva formas de pago desde su panel
+      var cfg = VC.settings.get();
+      var allowed = ['card', 'bizum', 'transfer', 'fin'].filter(function (m) {
+        return cfg.pay[m] && (m !== 'fin' || booking.total >= cfg.finMin);
+      });
+      if (!allowed.length) allowed = ['card'];
+      if (allowed.indexOf(booking.method) < 0) booking.method = allowed[0];
+      var opts = {
+        card: ['card', 'Tarjeta', 'Visa, Mastercard o Amex'],
+        bizum: ['phone', 'Bizum', 'Al momento desde tu móvil'],
+        transfer: ['bank', 'Transferencia', 'Plaza bloqueada 24 h'],
+        fin: ['split', 'Financiación', '100 € hoy y el resto en cuotas']
+      };
       body.innerHTML = '<h3>¿Cómo quieres pagar?</h3>' + priceLines() +
         '<div class="pay-methods" role="radiogroup" aria-label="Forma de pago">' +
-          payOption('card', 'card', 'Tarjeta', 'Visa, Mastercard o Amex') +
-          payOption('bizum', 'phone', 'Bizum', 'Al momento desde tu móvil') +
-          payOption('transfer', 'bank', 'Transferencia', 'Plaza bloqueada 24 h') +
-          (fin ? payOption('fin', 'split', 'Financiación', '100 € hoy y el resto en cuotas') : '') +
+          allowed.map(function (m) { return payOption(m, opts[m][0], opts[m][1], opts[m][2]); }).join('') +
         '</div>' +
         '<div class="pay-extra" id="pay-extra"></div>' +
         '<p class="demo-note">Demostración: no se realiza ningún cobro ni se piden datos de tarjeta. En la web real, el pago lo procesa la pasarela del banco de VuelaClic.</p>' +
@@ -1079,8 +1121,10 @@
       seatsTotal: seatsTotal,
       net: net,
       margin: booking.total - net,
+      userEmail: VC.auth.current() ? VC.auth.current().email : null,
       source: 'web'
     });
+    bookingPromise.then(function () { VC.auth.rememberTravellers(booking.travellers); });
     function next() {
       if (!$('#booking').open) return;
       if (i > 0) { steps[i - 1].classList.remove('busy'); steps[i - 1].classList.add('on'); }
@@ -1163,6 +1207,11 @@
         '<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(shareText(res)) + '">' + icon('whatsapp') + 'Enviar por WhatsApp</a>' +
         '<a class="btn btn-ghost" download="vuelaclic-' + res.locator + '.ics" href="' + calendarFile(res) + '">' + icon('cal') + 'Añadir al calendario</a>' +
       '</div>' +
+      (VC.auth.current()
+        ? '<div class="acc-banner is-in">' + icon('suitcase') + '<span>Guardado en <strong>Mis viajes</strong>, junto a tus viajeros.</span>' +
+          '<button type="button" class="btn btn-ghost btn-xs" data-acc-trips>Ver</button></div>'
+        : '<div class="acc-banner">' + icon('user') + '<span>Crea tu cuenta y tendrás este viaje en <strong>Mis viajes</strong>.</span>' +
+          '<button type="button" class="btn btn-ghost btn-xs" data-acc-register>Crear cuenta</button></div>') +
       '<div class="booking-actions"><span class="fine">Proveedor: ' + esc(VC.api.provider.label) + '</span>' +
       '<button type="button" class="btn btn-sun" data-done>Hacer otra búsqueda</button></div>';
   }
@@ -1178,6 +1227,12 @@
       if (e.target.closest('[data-back]')) { booking.step--; renderBooking(); }
       if (e.target.closest('[data-skip-seats]')) { booking.seats = {}; booking.step = 3; renderBooking(); }
       if (e.target.closest('[data-fill]')) fillDemo();
+      if (e.target.closest('[data-acc-login]')) VC.account.open('login', { returnTo: 'booking' });
+      if (e.target.closest('[data-acc-trips]')) { dlg.close(); VC.account.open('profile', { tab: 'trips' }); }
+      if (e.target.closest('[data-acc-register]')) {
+        var lead = booking.travellers[0];
+        VC.account.open('register', { returnTo: 'booking', name: lead.name, surname: lead.surname, email: booking.contact.email, phone: booking.contact.phone });
+      }
       if (e.target.closest('[data-pay]')) {
         var bp = $('#bizum-phone');
         if (bp) booking.contact.phone = bp.value;
@@ -1335,8 +1390,34 @@
     });
   }
 
+  // ---------- Aviso publicado desde el panel ----------
+  function renderNotice() {
+    var s = VC.settings.get();
+    var on = s.noticeOn && s.notice.trim();
+    $('#site-notice').hidden = !on;
+    if (on) $('#site-notice-text').textContent = s.notice.trim();
+  }
+
+  function bindAccount() {
+    // al entrar desde la reserva se rellenan los viajeros sin perder el paso
+    VC.auth.onChange(function () {
+      if (!booking || !$('#booking').open) return;
+      prefillFromAccount();
+      if (booking.step === 1) renderBooking();
+      else if (booking.step === 4 && $('#ticket-slot .acc-banner') && VC.auth.current()) {
+        VC.auth.rememberTravellers(booking.travellers);
+        var bn = $('#ticket-slot .acc-banner');
+        bn.className = 'acc-banner is-in';
+        bn.innerHTML = icon('suitcase') + '<span>Guardado en <strong>Mis viajes</strong>, junto a tus viajeros.</span>' +
+          '<button type="button" class="btn btn-ghost btn-xs" data-acc-trips>Ver</button>';
+      }
+    });
+    window.addEventListener('storage', function (e) { if (e.key === 'vc.settings') renderNotice(); });
+  }
+
   // ---------- API para el asistente y el explorador ----------
   VC.app = {
+    toast: toast,
     searchTrip: function (o) {
       form.trip = o.trip || 'rt';
       $('input[name=trip][value=' + form.trip + ']').checked = true;
@@ -1361,6 +1442,8 @@
 
   // ---------- Arranque ----------
   bindTheme();
+  renderNotice();
+  bindAccount();
   renderLegs();
   renderPax();
   bindSearchForm();

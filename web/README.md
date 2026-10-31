@@ -38,6 +38,12 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 9. Mover el **margen** del panel (p. ej. al 10 %) y repetir una búsqueda en la web:
    los precios ya incluyen el nuevo margen. Con el panel y la web abiertos en dos
    pestañas, una reserva nueva aparece en el panel al momento.
+10. **Cuenta de cliente.** En la web, «Entrar» → «Usarla» (cuenta de prueba
+    `lucia.quispe@ejemplo.com` / `viaja2026`). Al reservar se rellenan solos sus datos
+    y viajeros, y el viaje queda en «Mis viajes». También se puede crear una cuenta nueva.
+11. **Clientes y ajustes del panel.** En el panel (acceso `agencia@vuelaclic.com` /
+    `juan2026`), ver la lista de clientes, abrir la ficha de una reserva y cancelarla.
+    En «Ajustes», desactivar Bizum y publicar un aviso: la web cambia al recargar.
 
 ## Qué hay en la demo
 
@@ -52,10 +58,16 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 | Pago con tarjeta, Bizum, transferencia o Fliinow (simulado) | Reserva |
 | Billete con QR, envío por WhatsApp y archivo de calendario | Reserva |
 | Mapa «¿A dónde puedo ir con X €?» en precio total o cuota mensual | Portada |
+| Modo noche (luna y estrellas en el cielo) | Botón de la cabecera |
+| Registro, acceso, «Mis viajes», datos y viajeros guardados | Botón «Entrar» de la cabecera |
 | Panel del agente: ventas, margen, deuda con VDT, cobros pendientes | `admin.html` |
+| Panel: acceso, ficha de reserva, cancelar y reembolsar, clientes, exportar CSV | `admin.html` |
+| Panel: formas de pago de la web, importe mínimo para financiar, aviso en la web | `admin.html`, «Ajustes» |
 
-Las reservas de la demo, el margen y los cambios del panel se guardan en el
-navegador (`localStorage`), solo en el equipo donde se hace la demo.
+Las reservas de la demo, las cuentas, el margen y los cambios del panel se guardan
+en el navegador (`localStorage`), solo en el equipo donde se hace la demo. Las
+contraseñas de cliente se guardan como hash, pero el acceso real (clientes y
+agencia) tiene que hacerlo el backend: aquí solo se simula.
 
 ## Estructura
 
@@ -67,6 +79,8 @@ navegador (`localStorage`), solo en el equipo donde se hace la demo.
 | `js/simulator.js` | Genera vuelos de forma determinista (misma búsqueda, mismos resultados) |
 | `js/api.js` | Capa de proveedor (simulador o GrupoVDT), margen y almacenamiento de la demo |
 | `js/app.js` | Interfaz: buscador, resultados, reserva |
+| `js/accounts.js` | Cuentas de cliente (registro, acceso, viajes), compartido con el panel |
+| `js/account-ui.js` | Ventana de cuenta de la web: Entrar, Crear cuenta, Mi cuenta |
 | `js/assistant.js` | Asistente: convierte una frase en una búsqueda |
 | `js/globe.js` | Globo 3D de resultados (carga `vendor/globe.gl.min.js` en la primera búsqueda) |
 | `js/explorer.js` | Mapa «¿A dónde puedo ir con X €?» |

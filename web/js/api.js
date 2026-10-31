@@ -35,6 +35,16 @@
     sell: function (net) { return Math.round(net * (1 + this.markup / 100)); }
   };
 
+  // Lo que la agencia decide desde su panel y la web respeta
+  VC.settings = {
+    defaults: { pay: { card: true, bizum: true, transfer: true, fin: true }, finMin: 300, notice: '', noticeOn: false },
+    get: function () {
+      var s = VC.store.get('settings', {});
+      return Object.assign({}, this.defaults, s, { pay: Object.assign({}, this.defaults.pay, s.pay) });
+    },
+    set: function (patch) { VC.store.set('settings', Object.assign(this.get(), patch)); }
+  };
+
   function withMargin(offer) {
     offer.net = offer.price;
     offer.netPerAdult = offer.pricePerAdult;

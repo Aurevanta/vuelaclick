@@ -49,6 +49,11 @@
 
 <a class="skip" href="#buscar">Ir al buscador</a>
 
+<!-- Aviso que la agencia publica desde su panel -->
+<div class="site-notice" id="site-notice" role="status" hidden>
+  <div class="wrap"><svg class="ic"><use href="#i-spark"/></svg><span id="site-notice-text"></span></div>
+</div>
+
 <header class="site-header" id="top">
   <div class="wrap header-row">
     <a class="logo" href="#top" aria-label="VuelaClic, inicio">
@@ -69,6 +74,9 @@
     <a class="header-wa" href="https://wa.me/34647778336" target="_blank" rel="noopener">
       <svg class="ic"><use href="#i-whatsapp"/></svg><span>647 778 336</span>
     </a>
+    <button type="button" class="account-btn" id="account-btn" aria-haspopup="dialog">
+      <svg class="ic"><use href="#i-user"/></svg><span class="acc-name">Entrar</span>
+    </button>
     <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Modo noche" aria-pressed="false">
       <span class="toggle-knob"></span>
     </button>
@@ -406,6 +414,24 @@
   </div>
 </dialog>
 
+<dialog class="account" id="account" aria-labelledby="account-title">
+  <div class="account-inner">
+    <aside class="account-side" aria-hidden="true">
+      <span class="logo-word">Vuela<b>Clic</b></span>
+      <svg class="account-route" viewBox="0 0 240 160"><path d="M10 140 C 60 120, 90 40, 150 50 S 220 20, 235 10" fill="none"/><use href="#i-plane" x="196" y="14" width="26" height="26" transform="rotate(60 209 27)"/></svg>
+      <ul>
+        <li><svg class="ic"><use href="#i-suitcase"/></svg>Todos tus viajes y billetes en un sitio</li>
+        <li><svg class="ic"><use href="#i-user"/></svg>Tus viajeros guardados: reservas en un minuto</li>
+        <li><svg class="ic"><use href="#i-whatsapp"/></svg>Juan ve tu reserva y te atiende antes</li>
+      </ul>
+    </aside>
+    <div class="account-main">
+      <button type="button" class="icon-btn account-close" id="account-close" aria-label="Cerrar"><svg class="ic"><use href="#i-close"/></svg></button>
+      <div id="account-body"></div>
+    </div>
+  </div>
+</dialog>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="js/data.js"></script>
@@ -413,9 +439,11 @@
 <script src="vendor/qrcode.js"></script>
 <script src="js/simulator.js"></script>
 <script src="js/api.js"></script>
+<script src="js/accounts.js"></script>
 <script src="js/globe.js"></script>
 <script src="js/seats.js"></script>
 <script src="js/app.js"></script>
+<script src="js/account-ui.js"></script>
 <script src="js/explorer.js"></script>
 <script src="js/assistant.js"></script>
 </body>
