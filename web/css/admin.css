@@ -124,7 +124,7 @@
 .adm-logout:hover { background: rgba(255, 255, 255, .22); }
 
 /* ---------- Reservas: filas clicables y ficha ---------- */
-.bk-table tbody tr[data-open] { cursor: pointer; }
+.bk-table tbody tr[data-open] { cursor: var(--cursor-hand); }
 .bk-table tbody tr[data-open]:hover { background: rgba(27, 91, 224, .04); }
 .bk-table tr.is-cancelled td { opacity: .55; }
 .bk-table tr.is-cancelled td:last-child, .bk-table tr.is-cancelled td:nth-child(5) { opacity: 1; }
@@ -172,7 +172,7 @@
 .settings .card-head { margin-bottom: 0; }
 .settings .card-sub { margin: -6px 0 0; }
 .switches { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.switch { position: relative; display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 600; }
+.switch { position: relative; display: flex; align-items: center; gap: 12px; cursor: var(--cursor-hand); font-weight: 600; }
 .switches .switch { padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--line); }
 .switch small { display: block; color: var(--muted); font-size: 12.5px; font-weight: 600; }
 .switch input { position: absolute; opacity: 0; pointer-events: none; }
