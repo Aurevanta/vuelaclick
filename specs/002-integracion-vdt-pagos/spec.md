@@ -3,8 +3,8 @@
 **Feature ID:** 002 · **Estado:** borrador, pendiente de aceptación del presupuesto · **Fecha:** 2026-10-31 · Plan: [`plan.md`](plan.md)
 
 > QUÉ y POR QUÉ. El cómo está en [`plan.md`](plan.md) y el avance en [`tasks.md`](tasks.md).
-> Alcance y condiciones acordados en el presupuesto de Aurevanta Labs (2.500 € + IVA,
-> `docs/presupuesto/`), incluido su apartado 07, «Condiciones de la integración con GrupoVDT».
+> Alcance y condiciones acordados en el presupuesto de Aurevanta Labs, incluido su apartado 07,
+> «Condiciones de la integración con GrupoVDT». El presupuesto no se guarda en este repositorio.
 
 ## 1. Resumen
 

@@ -3,7 +3,7 @@
 **Feature ID:** 002 · Acompaña a [`spec.md`](spec.md) y [`plan.md`](plan.md) · Fecha: 2026-10-31
 
 ## F0 — Antes de empezar (bloqueantes)
-- [ ] V001 Aceptación del presupuesto y pago de inicio (`docs/presupuesto/`)
+- [ ] V001 Aceptación del presupuesto y pago de inicio
 - [ ] V002 Documentación, entorno de pruebas y credenciales de GrupoVDT; confirmar si es REST/JSON `[NEEDS CLARIFICATION]`
 - [ ] V003 Alta del TPV virtual en Redsys con Bizum y claves de pruebas `[NEEDS CLARIFICATION]`
 - [ ] V004 Tipo de integración con Fliinow `[NEEDS CLARIFICATION]`

@@ -32,7 +32,7 @@ decisión o se enmienda la constitución con su versión.
   La publicación a producción la hace el usuario (Art. XI).
 - **Rama:** `miguel`. Commits en español, describiendo el cambio.
 - **Demos:** `?cielo=amanecer|atardecer|noche` fuerza el cielo; cuentas de prueba en el [README](README.md).
-- **Auditoría y presupuesto:** `docs/auditoria/` y `docs/presupuesto/` (el PDF se regenera con Chrome sin interfaz desde el HTML).
+- **Auditoría:** `docs/auditoria/`. Los presupuestos y documentos comerciales de Aurevanta no se suben a este repositorio.
 
 ## Cosas que no son evidentes
 
