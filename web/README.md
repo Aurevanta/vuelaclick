@@ -41,8 +41,8 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 10. **Cuenta de cliente.** En la web, «Entrar» → «Usarla» (cuenta de prueba
     `lucia.quispe@ejemplo.com` / `viaja2026`). Al reservar se rellenan solos sus datos
     y viajeros, y el viaje queda en «Mis viajes». También se puede crear una cuenta nueva.
-11. **Clientes y ajustes del panel.** En el panel (acceso `agencia@vuelaclic.com` /
-    `juan2026`), ver la lista de clientes, abrir la ficha de una reserva y cancelarla.
+11. **Clientes y ajustes del panel.** En el panel (botón «Agencia» de la cabecera,
+    acceso `agencia@vuelaclic.com` / `juan2026`), ver la lista de clientes, abrir la ficha de una reserva y cancelarla.
     En «Ajustes», desactivar Bizum y publicar un aviso: la web cambia al recargar.
 
 ## Qué hay en la demo
@@ -63,6 +63,16 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 | Panel del agente: ventas, margen, deuda con VDT, cobros pendientes | `admin.html` |
 | Panel: acceso, ficha de reserva, cancelar y reembolsar, clientes, exportar CSV | `admin.html` |
 | Panel: formas de pago de la web, importe mínimo para financiar, aviso en la web | `admin.html`, «Ajustes» |
+
+### Usuarios del panel
+
+| Usuario | Email | Contraseña |
+|---|---|---|
+| Juan Gómez (administrador) | `juan@vuelaclic.com` | No se publica: está en `credenciales-panel.md` (local, fuera de git) |
+| Cuenta de demostración | `agencia@vuelaclic.com` | `juan2026` |
+
+Están en `ADMINS`, en `js/admin.js`, y solo se guarda el hash de cada contraseña.
+Para cambiar una, se calcula el SHA-256 de `vuelaclic-demo:` seguido de la contraseña nueva.
 
 Las reservas de la demo, las cuentas, el margen y los cambios del panel se guardan
 en el navegador (`localStorage`), solo en el equipo donde se hace la demo. Las

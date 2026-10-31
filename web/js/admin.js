@@ -10,8 +10,15 @@
   var longFmt = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   var CREDIT_LIMIT = 25000; // línea de crédito de la agencia en GrupoVDT (ejemplo)
 
-  // Acceso de demostración. En producción lo valida el backend y nunca vive en el navegador.
-  var ADMIN = { email: 'agencia@vuelaclic.com', password: 'juan2026' };
+  // Usuarios del panel. Solo se guarda el hash de la contraseña (ver VC.auth.hash).
+  // En producción el acceso lo valida el backend y estos datos no viven en el navegador.
+  var ADMINS = [
+    { email: 'juan@vuelaclic.com', name: 'Juan Gómez', role: 'Administrador',
+      hash: '41256a9aa04d38a8c681fffe17e6b01d7a8dd1685a9c0b3cc368845aebbe8c39' },
+    { email: 'agencia@vuelaclic.com', name: 'Equipo VuelaClic', role: 'Cuenta de demostración',
+      hash: '51509c5717244355293ed1e8d207831f8eb7e8c0edfe67a338175b43ee3086a4' }
+  ];
+  var DEMO_ADMIN = { email: 'agencia@vuelaclic.com', password: 'juan2026' };
 
   var NAMES = ['María Fernanda Quispe', 'José Luis Mamani', 'Carmen Rosa Huamán', 'Luis Alberto Torres', 'Ana Lucía Vargas',
     'Pedro Pablo Rojas', 'Rosa Elena Benítez', 'Jorge Andrés Gómez', 'Milagros Paredes', 'Wilmer Choque', 'Yesenia Martínez',
@@ -400,38 +407,62 @@
   }
 
   // ---------- Acceso ----------
-  function unlock(on) {
-    document.body.classList.toggle('is-locked', !on);
-    try { if (on) sessionStorage.setItem('vc.adminSession', '1'); else sessionStorage.removeItem('vc.adminSession'); } catch (e) { /* modo privado */ }
+  function sessionAdmin() {
+    var email = null;
+    try { email = sessionStorage.getItem('vc.adminSession'); } catch (e) { /* modo privado */ }
+    return ADMINS.filter(function (a) { return a.email === email; })[0] || null;
+  }
+
+  // Nombre, iniciales y saludo según quién haya entrado
+  function renderAdminUser() {
+    var a = sessionAdmin();
+    if (!a) return;
+    var first = a.name.split(' ')[0];
+    $('#adm-avatar').textContent = a.name.split(' ').map(function (p) { return p[0]; }).slice(0, 2).join('').toUpperCase();
+    $('#adm-name').textContent = a.name;
+    $('#adm-role').textContent = a.role;
+    var h = new Date().getHours();
+    $('#sum-title').textContent = (h < 13 ? 'Buenos días' : h < 21 ? 'Buenas tardes' : 'Buenas noches') + (a.email === DEMO_ADMIN.email ? '' : ', ' + first);
+  }
+
+  function unlock(admin) {
+    document.body.classList.toggle('is-locked', !admin);
+    try { if (admin) sessionStorage.setItem('vc.adminSession', admin.email); else sessionStorage.removeItem('vc.adminSession'); } catch (e) { /* modo privado */ }
+    renderAdminUser();
   }
 
   function bindLogin() {
     var f = $('#adm-login-form');
+    // sesiones antiguas guardaban '1' en lugar del email
+    if (!document.body.classList.contains('is-locked') && !sessionAdmin()) unlock(null);
     $('#login-fill').addEventListener('click', function () {
-      f.email.value = ADMIN.email;
-      f.password.value = ADMIN.password;
+      f.email.value = DEMO_ADMIN.email;
+      f.password.value = DEMO_ADMIN.password;
       f.querySelector('.login-submit').focus();
     });
     f.addEventListener('submit', function (e) {
       e.preventDefault();
-      var ok = f.email.value.trim().toLowerCase() === ADMIN.email && f.password.value === ADMIN.password;
-      $('#login-error').hidden = ok;
-      if (!ok) { f.password.select(); return; }
-      f.reset();
-      unlock(true);
-      scrollTo(0, 0);
-      toast('Sesión iniciada. Bienvenido, Juan.');
+      var email = f.email.value.trim().toLowerCase();
+      var admin = ADMINS.filter(function (a) { return a.email === email; })[0];
+      VC.auth.hash(f.password.value).then(function (h) {
+        var ok = !!admin && admin.hash === h;
+        $('#login-error').hidden = ok;
+        if (!ok) { f.password.select(); return; }
+        f.reset();
+        unlock(admin);
+        scrollTo(0, 0);
+        toast('Sesión iniciada. Hola, ' + admin.name.split(' ')[0] + '.');
+      });
     });
     $('#adm-logout').addEventListener('click', function () {
-      unlock(false);
+      unlock(null);
       toast('Has salido del panel.');
     });
   }
 
   function bind() {
     $('#sum-date').textContent = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-    var h = new Date().getHours();
-    $('#sum-title').textContent = (h < 13 ? 'Buenos días' : h < 21 ? 'Buenas tardes' : 'Buenas noches') + ', Juan';
+    renderAdminUser();
 
     $('#margin-range').addEventListener('input', function () {
       VC.pricing.markup = +this.value;

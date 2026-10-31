@@ -38,6 +38,7 @@
 
   VC.auth = {
     DEMO: DEMO,
+    hash: hash,
 
     current: function () { return publicUser(find(VC.store.get('session', null))); },
 
