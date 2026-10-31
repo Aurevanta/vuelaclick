@@ -2,6 +2,7 @@
 .adm-body { background: #EEF3FB; }
 .adm-head { position: sticky; top: 0; z-index: 30; background: var(--night); color: #fff; }
 .adm-head-row { display: flex; align-items: center; gap: 18px; height: 64px; }
+.adm-head-row > * { flex: none; white-space: nowrap; }
 .adm-head .logo { text-decoration: none; }
 .adm-tag { padding: 4px 10px; border-radius: 999px; background: rgba(255, 197, 49, .18); color: var(--sun); font-weight: 700; font-size: 13px; }
 .adm-nav { display: flex; gap: 4px; margin-left: auto; }
@@ -109,7 +110,8 @@
   background: radial-gradient(700px 400px at 80% 110%, rgba(41, 181, 242, .45), transparent 70%), linear-gradient(160deg, #0A2463, #123FA8 60%, #1B5BE0);
 }
 .login-card { width: min(400px, 100%); display: grid; gap: 14px; padding: 32px 28px 24px; border-radius: 26px; background: #fff; box-shadow: 0 40px 100px -20px rgba(3, 9, 26, .6); }
-.login-card .logo-word { color: var(--night); font-size: 24px; justify-self: center; }
+.login-brand { justify-self: center; --brand-h: 70px; }
+.adm-brand { --brand-h: 46px; }
 .login-lock { justify-self: center; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--cloud); color: var(--blue); }
 .login-lock .ic { width: 26px; height: 26px; }
 .login-card h1 { font-size: 28px; text-align: center; }
@@ -192,11 +194,14 @@
 .provider code { font-size: 12.5px; }
 .dot-live { flex: none; width: 10px; height: 10px; margin-top: 6px; border-radius: 50%; background: var(--cheap); box-shadow: 0 0 0 4px rgba(18, 160, 106, .18); }
 
+/* el menú del panel necesita sitio: por debajo de 1240 px se navega con el scroll */
+@media (max-width: 1240px) {
+  .adm-nav { display: none; }
+  .adm-user { margin-left: auto; }
+}
 @media (max-width: 1080px) {
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .adm-grid { grid-template-columns: 1fr; }
-  .adm-nav { display: none; }
-  .adm-user { margin-left: auto; }
 }
 @media (max-width: 600px) {
   .adm-user span:last-child, .adm-tag { display: none; }

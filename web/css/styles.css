@@ -24,6 +24,7 @@
   --display: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
   --text: 'Figtree', 'Segoe UI', sans-serif;
 
+  --header-h: 80px;
   --wrap: 1180px;
   --gutter: clamp(16px, 4vw, 40px);
   --shadow-lift: 0 24px 60px -24px rgba(10, 36, 99, .45);
@@ -32,7 +33,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
 body {
   margin: 0;
   font: 400 16px/1.55 var(--text);
@@ -81,9 +82,18 @@ a { color: inherit; }
   backdrop-filter: blur(14px) saturate(1.4);
   color: #fff;
 }
-.header-row { display: flex; align-items: center; gap: 14px; height: 68px; }
+.header-row { display: flex; align-items: center; gap: 14px; height: var(--header-h); }
 .header-row > * { flex: none; white-space: nowrap; }
 .logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
+/* Logo en SVG (#vc-logo): el alto manda y el ancho sale de la proporción */
+@property --logo-tag { syntax: '<number>'; inherits: true; initial-value: 1; }
+.brand { display: block; height: var(--brand-h, 60px); width: auto; overflow: visible; --logo-ink: #fff; --logo-accent: var(--sky); }
+.logo .brand { transform-origin: left center; transition: transform .35s var(--ease-out), --logo-tag .25s; }
+/* al bajar, el logo se encoge y el lema se esconde; la cabecera mantiene su alto */
+.site-header.is-compact .logo .brand { transform: scale(.82); --logo-tag: 0; }
+.brand-foot { --brand-h: 54px; }
+/* sobre fondo blanco, los colores del logo original */
+.brand-light { --logo-ink: var(--night); --logo-accent: #1B8FE8; }
 .logo-swoosh { width: 44px; height: 28px; }
 .logo-word { font: 800 26px/1 var(--display); letter-spacing: -.035em; color: #fff; }
 .logo-word b { font-weight: 800; color: var(--sky); }
@@ -99,7 +109,7 @@ a { color: inherit; }
 .hero {
   position: relative; overflow: hidden; color: #fff;
   padding: clamp(48px, 8vw, 96px) 0 clamp(150px, 16vw, 190px);
-  margin-top: -68px; padding-top: calc(68px + clamp(48px, 8vw, 96px));
+  margin-top: calc(-1 * var(--header-h)); padding-top: calc(var(--header-h) + clamp(48px, 8vw, 96px));
 }
 .sky {
   position: absolute; inset: 0; z-index: 0;
@@ -618,6 +628,8 @@ body.has-selection .toast { bottom: 108px; }
 @media (min-width: 1081px) and (max-width: 1380px) {
   .header-wa { width: 38px; height: 38px; padding: 0; justify-content: center; }
   .header-wa span { display: none; }
+  .admin-link { width: 38px; padding: 0; justify-content: center; }
+  .admin-link span { display: none; }
   .main-nav { gap: 2px; }
   .main-nav a { padding: 8px 7px; }
 }
@@ -638,6 +650,8 @@ body.has-selection .toast { bottom: 108px; }
   .finance-grid, .contact-card { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {
+  :root { --header-h: 64px; }
+  .logo .brand { --brand-h: 46px; }
   .header-wa span { display: none; }
   .hero { padding-bottom: 150px; }
   .hero-perks li { font-size: 14px; }
@@ -909,7 +923,7 @@ body.has-selection .toast { bottom: 108px; }
   position: relative; display: flex; flex-direction: column; gap: 18px; padding: 30px 26px; color: #fff; overflow: hidden;
   background: radial-gradient(400px 260px at 0% 100%, rgba(41, 181, 242, .45), transparent 70%), linear-gradient(160deg, #0A2463, #1B5BE0);
 }
-.account-side .logo-word { font-size: 24px; }
+.account-side .brand { --brand-h: 64px; }
 .account-route { width: 100%; height: auto; margin: auto 0 0; color: #fff; }
 .account-route path { stroke: rgba(255, 255, 255, .55); stroke-width: 2.5; stroke-dasharray: 2 10; stroke-linecap: round; animation: dash 3s linear infinite; }
 .account-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font-weight: 600; font-size: 14.5px; }
@@ -1012,8 +1026,7 @@ body.has-selection .toast { bottom: 108px; }
   .header-wa { display: none; }
   .admin-link { margin-left: auto; }
   .header-row { gap: 8px; }
-  .logo-swoosh { width: 34px; height: 22px; }
-  .logo-word { font-size: 22px; }
+  .logo .brand { --brand-h: 42px; }
   .admin-link, .account-btn { width: 34px; height: 34px; }
   .acc-tabs button, .acc-switch button { padding: 9px 4px; font-size: 14px; }
   .acc-tabs > *, .acc-switch > *, .acc-head > * { min-width: 0; }

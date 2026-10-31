@@ -1399,6 +1399,20 @@
     });
   }
 
+  // ---------- Cabecera: el logo se encoge al bajar ----------
+  function bindHeader() {
+    var header = $('.site-header');
+    var ticking = false;
+    function update() {
+      header.classList.toggle('is-compact', window.scrollY > 40);
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  }
+
   // ---------- Aviso publicado desde el panel ----------
   function renderNotice() {
     var s = VC.settings.get();
@@ -1451,6 +1465,7 @@
 
   // ---------- Arranque ----------
   bindTheme();
+  bindHeader();
   renderNotice();
   bindAccount();
   renderLegs();
