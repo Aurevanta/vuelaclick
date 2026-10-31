@@ -1020,6 +1020,63 @@ body.has-selection .toast { bottom: 108px; }
 }
 
 /* ======================================================================
+   Página legal
+   ====================================================================== */
+.legal-header { background: var(--night); }
+.legal-back {
+  margin-left: auto; display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 999px;
+  color: #fff; text-decoration: none; font-weight: 700; font-size: 14.5px; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .3);
+}
+.legal-back:hover { background: rgba(255, 255, 255, .1); }
+.legal { padding: clamp(36px, 6vw, 64px) 0 80px; }
+.legal-hero { max-width: 760px; margin-bottom: 36px; }
+.legal-hero h1 { font-size: clamp(34px, 5vw, 56px); font-weight: 800; }
+.legal-hero > p { margin-top: 12px; color: var(--muted); font-size: 18px; }
+.legal-draft { padding: 12px 16px; border-radius: 14px; background: rgba(255, 197, 49, .16); font-size: 15px !important; color: var(--ink) !important; }
+.legal-layout { display: grid; grid-template-columns: 230px 1fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+.legal-layout > * { min-width: 0; }
+.legal-toc { position: sticky; top: 92px; display: grid; gap: 4px; }
+.legal-toc a { padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 700; color: var(--muted); border-left: 3px solid transparent; }
+.legal-toc a:hover { background: var(--card); color: var(--ink); }
+.legal-toc a.is-on { background: var(--card); color: var(--strong); border-left-color: var(--sun); box-shadow: var(--shadow-soft); }
+.legal-content { display: grid; gap: 24px; }
+.legal-content > * { min-width: 0; }
+.legal-content section { scroll-margin-top: 90px; padding: clamp(22px, 3.5vw, 40px); border-radius: 24px; background: var(--card); box-shadow: var(--shadow-soft); }
+.legal-content h2 { font-size: clamp(26px, 3vw, 34px); font-weight: 800; margin-bottom: 14px; }
+.legal-content h3 { font-size: 19px; margin: 26px 0 8px; }
+.legal-content p, .legal-content li { max-width: 72ch; }
+.legal-content p + p { margin-top: 10px; }
+.legal-content ul, .legal-content ol { padding-left: 1.3em; margin: 8px 0; display: grid; gap: 6px; }
+.legal-content a { color: var(--blue); font-weight: 600; }
+.legal-content mark { background: rgba(255, 197, 49, .38); color: inherit; padding: 0 3px; border-radius: 4px; }
+.legal-data { margin: 14px 0 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.legal-data div { display: grid; grid-template-columns: 180px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.legal-data dt { font-weight: 700; color: var(--muted); }
+.legal-data dd { margin: 0; }
+.legal-table-wrap { position: relative; overflow-x: auto; margin: 12px 0; }
+.legal-table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 620px; }
+.legal-table th { text-align: left; font-size: 13px; color: var(--muted); padding: 8px 10px; border-bottom: 1.5px solid var(--line); }
+.legal-table td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.legal-table code { font-size: 13px; background: var(--cloud); padding: 2px 6px; border-radius: 6px; }
+.legal-updated { color: var(--muted); font-size: 14px; }
+.terms-check { align-items: flex-start; font-size: 14px; font-weight: 600; }
+.terms-check input, .acc-check input { flex: none; margin-top: 2px; }
+.terms-check a, .acc-check a { color: var(--blue); }
+:root[data-theme=night] .terms-check a, :root[data-theme=night] .acc-check a { color: var(--sky); }
+.footer-legal { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.footer-legal a { color: #fff; opacity: .8; font-weight: 600; text-decoration: none; }
+.footer-legal a:hover { opacity: 1; text-decoration: underline; }
+:root[data-theme=night] .legal-content a { color: var(--sky); }
+:root[data-theme=night] .legal-header { background: #030A22; }
+@media (max-width: 860px) {
+  .legal-layout { grid-template-columns: 1fr; }
+  .legal-toc { position: static; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .legal-toc a { flex: none; border-left: 0; background: var(--card); }
+  .legal-toc a.is-on { box-shadow: inset 0 -3px 0 var(--sun); }
+  .legal-data div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* ======================================================================
    Modo noche: el sol se pone, salen la luna y las estrellas
    ====================================================================== */
 .theme-toggle {

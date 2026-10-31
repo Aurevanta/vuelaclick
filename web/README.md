@@ -59,6 +59,7 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 | Billete con QR, envío por WhatsApp y archivo de calendario | Reserva |
 | Mapa «¿A dónde puedo ir con X €?» en precio total o cuota mensual | Portada |
 | Modo noche (luna y estrellas en el cielo) | Botón de la cabecera |
+| Aviso legal, condiciones de contratación, privacidad y cookies (borrador: los datos en amarillo están por completar y debe revisarlo un abogado) | `legal.html`, enlazada en el pie, el registro y el paso de pago |
 | Registro, acceso, «Mis viajes», datos y viajeros guardados | Botón «Entrar» de la cabecera |
 | Panel del agente: ventas, margen, deuda con VDT, cobros pendientes | `admin.html` |
 | Panel: acceso, ficha de reserva, cancelar y reembolsar, clientes, exportar CSV | `admin.html` |

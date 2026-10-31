@@ -1047,6 +1047,8 @@
         '</div>' +
         '<div class="pay-extra" id="pay-extra"></div>' +
         '<p class="demo-note">Demostración: no se realiza ningún cobro ni se piden datos de tarjeta. En la web real, el pago lo procesa la pasarela del banco de VuelaClic.</p>' +
+        '<label class="check terms-check"><input type="checkbox" id="terms-ok"' + (booking.terms ? ' checked' : '') + '><span>He leído y acepto las <a href="legal.html#condiciones" target="_blank">condiciones de contratación</a>, incluidas las de cambios y cancelación de la tarifa, y la <a href="legal.html#privacidad" target="_blank">política de privacidad</a>.</span></label>' +
+        '<p class="form-error" id="terms-error" hidden>Para pagar tienes que aceptar las condiciones.</p>' +
         '<div class="booking-actions"><button type="button" class="back-btn" data-back>' + icon('arrow') + 'Volver</button>' +
         '<button type="button" class="btn btn-sun" data-pay></button></div>';
       renderPayExtra();
@@ -1122,6 +1124,7 @@
       net: net,
       margin: booking.total - net,
       userEmail: VC.auth.current() ? VC.auth.current().email : null,
+      termsAcceptedAt: new Date().toISOString(),
       source: 'web'
     });
     bookingPromise.then(function () { VC.auth.rememberTravellers(booking.travellers); });
@@ -1234,6 +1237,11 @@
         VC.account.open('register', { returnTo: 'booking', name: lead.name, surname: lead.surname, email: booking.contact.email, phone: booking.contact.phone });
       }
       if (e.target.closest('[data-pay]')) {
+        if (!booking.terms) {
+          $('#terms-error').hidden = false;
+          $('#terms-ok').focus();
+          return;
+        }
         var bp = $('#bizum-phone');
         if (bp) booking.contact.phone = bp.value;
         booking.step = 4;
@@ -1258,6 +1266,7 @@
       if (t.dataset.i !== undefined) booking.travellers[+t.dataset.i][t.name] = t.value;
       if (t.name === 'pay') { booking.method = t.value; renderPayExtra(); }
       if (t.name === 'plan') { booking.plan = +t.value; renderPayExtra(); }
+      if (t.id === 'terms-ok') { booking.terms = t.checked; if (t.checked) $('#terms-error').hidden = true; }
     });
     dlg.addEventListener('submit', function (e) {
       e.preventDefault();

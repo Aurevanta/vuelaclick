@@ -52,6 +52,7 @@
           id: 'u' + Date.now().toString(36),
           name: data.name.trim(), surname: data.surname.trim(), email: email, phone: (data.phone || '').trim(),
           newsletter: !!data.newsletter, createdAt: new Date().toISOString(), lastLogin: new Date().toISOString(),
+          termsAcceptedAt: new Date().toISOString(),
           travellers: [], passHash: h, source: 'web'
         };
         saveUsers([u].concat(users()));

@@ -69,7 +69,7 @@
         '<div class="full">' + passField('password', 'Contraseña', 'new-password') +
           '<div class="pass-meter" aria-hidden="true"><i></i><i></i><i></i></div><small class="pass-hint" id="pass-hint">Mínimo 8 caracteres.</small></div>' +
       '</div>' +
-      '<label class="check acc-check"><input type="checkbox" name="terms" required> Acepto las condiciones y la política de privacidad</label>' +
+      '<label class="check acc-check"><input type="checkbox" name="terms" required><span>He leído y acepto las <a href="legal.html#condiciones" target="_blank">condiciones</a> y la <a href="legal.html#privacidad" target="_blank">política de privacidad</a></span></label>' +
       '<label class="check acc-check"><input type="checkbox" name="newsletter" checked> Quiero recibir ofertas de vuelos por email o WhatsApp</label>' +
       '<p class="form-error" id="acc-error" hidden></p>' +
       '<button type="submit" class="btn btn-sun acc-submit">Crear cuenta</button>' +
