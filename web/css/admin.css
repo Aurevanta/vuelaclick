@@ -79,6 +79,8 @@
 .bk-table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 900px; }
 .bk-table th { text-align: left; font-size: 12.5px; color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1.5px solid var(--line); }
 .bk-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+/* Filas de una línea: en pantallas estrechas la tabla se desliza dentro de su caja */
+.bk-table th, .bk-table td { white-space: nowrap; }
 .bk-table td small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
 .bk-table .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
 .bk-table .muted { color: var(--muted); font-weight: 600; }
@@ -112,4 +114,7 @@
   .margin-example { grid-template-columns: 1fr 1fr; }
   .margin-example .win { grid-column: 1 / -1; }
   .bk-search, .bk-search input { width: 100%; min-width: 0; }
+  .bk-tools { width: 100%; }
+  .bk-tabs { max-width: 100%; overflow-x: auto; }
+  .bk-tabs button { flex: none; white-space: nowrap; }
 }
