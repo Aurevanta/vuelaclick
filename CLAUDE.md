@@ -37,6 +37,5 @@ decisión o se enmienda la constitución con su versión.
 ## Cosas que no son evidentes
 
 - La interfaz solo llama a `VC.api`; el simulador devuelve el mismo formato que devolverá GrupoVDT (Art. II).
-- `VC.settings.canFinance()` decide si se anuncian cuotas en toda la web (Art. III).
 - Todo lo de `web/` se publica: nunca poner ahí notas, README ni credenciales (Art. IV). La contraseña real de Juan está en `credenciales-panel.md` (ignorado por git).
 - Las transiciones de color no avanzan en el navegador integrado cuando el panel está oculto: para medir contraste, desactivar las transiciones antes.

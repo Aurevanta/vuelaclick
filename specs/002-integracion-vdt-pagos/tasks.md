@@ -6,7 +6,6 @@
 - [ ] V001 Aceptación del presupuesto y pago de inicio
 - [ ] V002 Documentación, entorno de pruebas y credenciales de GrupoVDT; confirmar si es REST/JSON `[NEEDS CLARIFICATION]`
 - [ ] V003 Alta del TPV virtual en Redsys con Bizum y claves de pruebas `[NEEDS CLARIFICATION]`
-- [ ] V004 Tipo de integración con Fliinow `[NEEDS CLARIFICATION]`
 - [ ] V005 Dominio, correo y datos legales de VuelaClic `[NEEDS CLARIFICATION]`
 - [ ] V006 Elegir alojamiento del servidor (VM con Coolify si GrupoVDT exige IP fija) `[NEEDS CLARIFICATION]`
 
@@ -26,7 +25,6 @@
 ## F3 — Pagos (semana 4)
 - [ ] V030 Redsys: formulario firmado, notificación `notify` verificada y estados de la reserva (FR-70, FR-73)
 - [ ] V031 Transferencia con bloqueo de 24 h y anulación automática (FR-71)
-- [ ] V032 Fliinow según su integración (FR-72)
 - [ ] V033 Emisión fallida → `pendiente_de_emision` y aviso (FR-73, FR-83)
 - [ ] V034 Correos de reserva, billete, transferencia y contraseña (FR-82)
 

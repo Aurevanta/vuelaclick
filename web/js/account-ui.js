@@ -7,7 +7,7 @@
   var money = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, useGrouping: 'always' });
   var dayFmt = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   var sinceFmt = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' });
-  var METHOD = { card: 'Tarjeta', bizum: 'Bizum', transfer: 'Transferencia', fin: 'Financiado con Fliinow' };
+  var METHOD = { card: 'Tarjeta', bizum: 'Bizum', transfer: 'Transferencia' };
 
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function icon(id) { return '<svg class="ic" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
@@ -92,7 +92,7 @@
         '<span>' + icon('user') + (b.travellers ? b.travellers.length : 1) + (b.travellers && b.travellers.length > 1 ? ' viajeros' : ' viajero') + '</span>' +
       '</div>' +
       '<div class="trip-card-foot"><span><small>Localizador</small><b class="loc">' + esc(b.locator) + '</b></span>' +
-        '<span><small>' + esc(METHOD[b.method] || '') + (b.plan ? ', ' + b.plan + ' cuotas' : '') + '</small><b>' + money.format(b.total) + '</b></span>' +
+        '<span><small>' + esc(METHOD[b.method] || '') + '</small><b>' + money.format(b.total) + '</b></span>' +
         '<a class="btn btn-ghost btn-xs" href="' + wa + '" target="_blank" rel="noopener">' + icon('whatsapp') + 'Consultar</a></div>' +
     '</li>';
   }

@@ -129,7 +129,7 @@
           ],
           travellers: [{ type: 'adt', name: 'Lucía', surname: 'Quispe Rojas', birth: '1991-03-14', docType: 'DNI', doc: '12345678Z' }],
           contact: { email: DEMO.email, phone: DEMO.phone },
-          method: 'fin', plan: 6, total: 1012, seatsTotal: 0, net: 946, margin: 66,
+          method: 'card', total: 1012, seatsTotal: 0, net: 946, margin: 66,
           status: 'issued', settled: true, source: 'web'
         });
         VC.store.set('bookings', list);

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VuelaClic — Vuelos económicos a Latinoamérica y el mundo</title>
-  <meta name="description" content="Busca y reserva vuelos con equipaje incluido y paga desde 100 € el resto en cuotas. Atención personalizada por WhatsApp.">
+  <meta name="description" content="Busca y reserva vuelos con equipaje incluido y paga con tarjeta, Bizum o transferencia. Atención personalizada por WhatsApp.">
   <meta name="theme-color" content="#0A2463">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
@@ -13,7 +13,7 @@
   <meta property="og:site_name" content="VuelaClic">
   <meta property="og:locale" content="es_ES">
   <meta property="og:title" content="VuelaClic — Vuelos económicos a Latinoamérica y el mundo">
-  <meta property="og:description" content="Busca y reserva vuelos con maleta incluida. Paga desde 100 € y el resto en cuotas. Te atiende una persona por WhatsApp.">
+  <meta property="og:description" content="Busca y reserva vuelos con maleta incluida. Paga con tarjeta, Bizum o transferencia. Te atiende una persona por WhatsApp.">
   <meta property="og:url" content="https://vuelaclick.netlify.app/">
   <meta property="og:image" content="https://vuelaclick.netlify.app/img/cusco.jpg">
   <meta property="og:image:alt" content="Machu Picchu, Perú">
@@ -61,7 +61,6 @@
   <symbol id="i-card" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></g></symbol>
   <symbol id="i-bank" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3 9.5 12 4l9 5.5zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20.5h18"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></g></symbol>
-  <symbol id="i-split" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></g></symbol>
   <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.03c-.24.68-1.42 1.3-1.96 1.35-.5.05-.97.23-3.28-.68-2.77-1.09-4.53-3.93-4.67-4.11-.13-.18-1.11-1.48-1.11-2.82s.7-2 .95-2.27c.25-.27.54-.34.72-.34l.52.01c.17.01.39-.06.61.47.23.54.77 1.88.84 2.02.07.13.11.29.02.47-.09.18-.13.29-.27.45l-.4.47c-.13.13-.27.28-.12.55.16.27.7 1.15 1.5 1.86 1.03.92 1.9 1.2 2.17 1.34.27.13.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.52.32.07.11.07.66-.17 1.33z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5c.4 3.9 1.6 6.3 3.4 7.6 1.4 1 3.3 1.5 5.6 1.9-2.3.4-4.2.9-5.6 1.9-1.8 1.3-3 3.7-3.4 7.6-.4-3.9-1.6-6.3-3.4-7.6-1.4-1-3.3-1.5-5.6-1.9 2.3-.4 4.2-.9 5.6-1.9C10.4 8.8 11.6 6.4 12 2.5zM19 2l.6 1.9L21.5 4.5l-1.9.6L19 7l-.6-1.9-1.9-.6 1.9-.6z"/></symbol>
@@ -101,7 +100,6 @@
     <nav class="main-nav" aria-label="Principal">
       <a href="#buscar">Vuelos</a>
       <a href="#destinos">Destinos</a>
-      <a href="#financiacion" data-fin>Financiación</a>
       <a href="#como">Cómo reservar</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -151,10 +149,10 @@
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1 id="hero-title">Tú eliges el destino. Nosotros hacemos el resto.</h1>
-        <p class="hero-lead">Vuelos a Latinoamérica y a medio mundo con equipaje incluido.<span data-fin> Reserva hoy con 100&nbsp;€ y paga el resto en cuotas.</span></p>
+        <p class="hero-lead">Vuelos a Latinoamérica y a medio mundo con equipaje incluido.</p>
         <ul class="hero-perks">
           <li><svg class="ic"><use href="#i-suitcase"/></svg>Maleta de 23 kg incluida</li>
-          <li data-fin><svg class="ic"><use href="#i-split"/></svg>Hasta 12 cuotas sin intereses</li>
+          <li><svg class="ic"><use href="#i-card"/></svg>Tarjeta, Bizum o transferencia</li>
           <li><svg class="ic"><use href="#i-whatsapp"/></svg>Te atiende una persona</li>
         </ul>
       </div>
@@ -333,10 +331,6 @@
         <h2 id="ex-title">¿A dónde puedo ir con <output id="ex-amount">700 €</output>?</h2>
         <p class="explore-hint" id="ex-hint">Por persona, ida y vuelta, el día más barato de las próximas 8 semanas.</p>
         <div class="ex-controls">
-          <div class="ex-mode" role="radiogroup" aria-label="Cómo quieres pagar">
-            <label><input type="radio" name="ex-mode" value="total" checked><span>Precio total</span></label>
-            <label data-fin><input type="radio" name="ex-mode" value="month"><span>Cuota al mes</span></label>
-          </div>
           <label class="ex-origin">Saliendo de
             <select id="ex-origin">
               <option value="MAD">Madrid</option>
@@ -357,35 +351,6 @@
     </div>
   </section>
 
-  <section class="finance" id="financiacion" aria-labelledby="fin-title" data-fin>
-    <div class="wrap finance-grid">
-      <div class="finance-copy">
-        <h2 id="fin-title">Viaja hoy y paga poco a poco</h2>
-        <p>Bloqueas tu billete con 100 € y el resto lo repartes en cuotas, sin intereses. La financiación la gestiona Fliinow y se aprueba en minutos con tu DNI o NIE.</p>
-        <ul class="finance-points">
-          <li><svg class="ic"><use href="#i-check"/></svg>Pago inicial de 100 €</li>
-          <li><svg class="ic"><use href="#i-check"/></svg>De 3 a 12 cuotas mensuales</li>
-          <li><svg class="ic"><use href="#i-check"/></svg>También tarjeta, Bizum o transferencia</li>
-        </ul>
-      </div>
-      <div class="calc" id="calc">
-        <label for="calc-price" class="calc-label">Precio de tu viaje</label>
-        <output class="calc-price" id="calc-price-out">900 €</output>
-        <input type="range" id="calc-price" min="300" max="3000" step="10" value="900">
-        <div class="calc-plans" role="radiogroup" aria-label="Número de cuotas">
-          <label><input type="radio" name="calc-plan" value="3"><span>3 cuotas</span></label>
-          <label><input type="radio" name="calc-plan" value="6" checked><span>6 cuotas</span></label>
-          <label><input type="radio" name="calc-plan" value="12"><span>12 cuotas</span></label>
-        </div>
-        <div class="calc-result">
-          <div><small>Hoy pagas</small><strong>100 €</strong></div>
-          <div><small>Y luego, cada mes</small><strong id="calc-monthly">133,33 €</strong></div>
-        </div>
-        <p class="fine">Simulación orientativa. La aprobación y las condiciones finales dependen de Fliinow.</p>
-      </div>
-    </div>
-  </section>
-
   <section class="how" id="como" aria-labelledby="how-title">
     <div class="wrap">
       <div class="section-head">
@@ -398,7 +363,7 @@
         </li>
         <li>
           <h3>Paga como prefieras</h3>
-          <p>Tarjeta, Bizum, transferencia<span data-fin> o 100 € de entrada y el resto en cuotas</span>. El pago lo recibimos directamente nosotros.</p>
+          <p>Tarjeta, Bizum o transferencia. El pago lo recibimos directamente nosotros.</p>
         </li>
         <li>
           <h3>Emitimos tu billete</h3>

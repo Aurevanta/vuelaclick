@@ -10,7 +10,7 @@
 
 La demo (spec 001) pasa a **vender de verdad**:
 - vuelos reales de GrupoVDT con el margen de VuelaClic;
-- cobro real al viajero (tarjeta y Bizum por Redsys, transferencia, financiación con Fliinow);
+- cobro real al viajero (tarjeta y Bizum por Redsys, y transferencia);
 - emisión del billete en GrupoVDT solo después del cobro (Art. I);
 - cuentas, reservas y panel guardados en un servidor seguro, no en el navegador (Art. IV, IX).
 
@@ -27,7 +27,7 @@ La interfaz de la demo se mantiene: solo cambia el proveedor de `VC.api` de `moc
 ## 3. Historias de usuario
 
 - **US-30 — Vuelos reales.** Como viajero, quiero ver vuelos y precios reales de GrupoVDT, con el precio confirmado antes de pagar.
-- **US-31 — Pago real.** Como viajero, quiero pagar con tarjeta o Bizum en la página segura del banco, por transferencia o en cuotas con Fliinow.
+- **US-31 — Pago real.** Como viajero, quiero pagar con tarjeta o Bizum en la página segura del banco, o por transferencia.
 - **US-32 — Billete emitido.** Como viajero, quiero recibir el billete emitido por correo y WhatsApp en cuanto se confirme el pago.
 - **US-33 — Nada se pierde.** Como Juan, quiero que si se cobra y la emisión falla, la reserva quede marcada en el panel para devolver el dinero o emitir a mano.
 - **US-34 — Panel seguro.** Como Juan, quiero que solo yo (y quien yo autorice) pueda entrar al panel, con datos guardados en el servidor.
@@ -45,7 +45,7 @@ La interfaz de la demo se mantiene: solo cambia el proveedor de `VC.api` de `moc
 ### Pagos
 - **FR-70:** Tarjeta y Bizum por Redsys (TPV virtual de VuelaClic), confirmados por la notificación del banco al servidor, no por la vuelta del navegador.
 - **FR-71:** Transferencia: plaza bloqueada 24 h, confirmación manual desde el panel y anulación automática al vencer.
-- **FR-72:** Financiación con Fliinow: 100 € de entrada y cuotas, según su integración.
+- **FR-72:** *Retirada el 2026-11-05: la web no ofrece financiación.*
 - **FR-73:** Solo con pago confirmado se emite en GrupoVDT (Art. I). Emisión fallida = reserva «pendiente de emisión» y aviso a Juan.
 
 ### Servidor, cuentas y panel
@@ -56,7 +56,7 @@ La interfaz de la demo se mantiene: solo cambia el proveedor de `VC.api` de `moc
 
 ## 5. Requisitos no funcionales
 
-- **NFR-10:** Credenciales de GrupoVDT, Redsys y Fliinow solo en variables de entorno del servidor (Art. IV).
+- **NFR-10:** Credenciales de GrupoVDT y Redsys solo en variables de entorno del servidor (Art. IV).
 - **NFR-11:** Datos personales en el servidor, cifrado en tránsito y copias diarias; contrato de encargado del tratamiento firmado (Art. IX).
 - **NFR-12:** La web pública se mantiene estática y sin compilación (Art. X); el servidor es aparte.
 - **NFR-13:** Quitar `noindex`, ayudas de demo y avisos de demostración al publicar (hallazgo F-0003).
@@ -66,7 +66,6 @@ La interfaz de la demo se mantiene: solo cambia el proveedor de `VC.api` de `moc
 - **[NEEDS CLARIFICATION] Tipo de API de GrupoVDT:** REST/JSON (incluido en el precio) o XML/SOAP/certificación (se presupuesta aparte). Pedir documentación y entorno de pruebas.
 - **[NEEDS CLARIFICATION] IP fija:** si GrupoVDT exige registrar la IP del servidor, condiciona el alojamiento.
 - **[NEEDS CLARIFICATION] Banco y TPV:** entidad de VuelaClic, alta en Redsys y Bizum.
-- **[NEEDS CLARIFICATION] Fliinow:** enlace de pago o API.
 - **[NEEDS CLARIFICATION] Dominio y correo:** `vuelaclic.es` u otro; proveedor de correo.
 - **[NEEDS CLARIFICATION] Datos legales de VuelaClic:** razón social, NIF, número de agencia de viajes y garantía, para `legal.html`.
 

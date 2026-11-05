@@ -2,7 +2,7 @@
    siempre llama a VC.api.*, y aquí se decide si responde el simulador o GrupoVDT.
 
    Flujo de cobro acordado con el cliente:
-     1. El viajero paga a VuelaClic (tarjeta, Bizum, transferencia o financiación).
+     1. El viajero paga a VuelaClic (tarjeta, Bizum o transferencia).
      2. VuelaClic confirma la reserva en GrupoVDT y le paga con su crédito de agencia.
      3. GrupoVDT emite el billete y VuelaClic lo envía al viajero.
    Por eso el pago nunca va directo a VDT desde la web. */
@@ -37,15 +37,12 @@
 
   // Lo que la agencia decide desde su panel y la web respeta
   VC.settings = {
-    defaults: { pay: { card: true, bizum: true, transfer: true, fin: true }, finMin: 300, notice: '', noticeOn: false },
+    defaults: { pay: { card: true, bizum: true, transfer: true }, notice: '', noticeOn: false },
     get: function () {
       var s = VC.store.get('settings', {});
       return Object.assign({}, this.defaults, s, { pay: Object.assign({}, this.defaults.pay, s.pay) });
     },
-    set: function (patch) { VC.store.set('settings', Object.assign(this.get(), patch)); },
-    // única fuente de verdad para ofrecer cuotas: tarjetas, explorador, portada y pago
-    get finOn() { return this.get().pay.fin; },
-    canFinance: function (price) { var s = this.get(); return s.pay.fin && price >= s.finMin; }
+    set: function (patch) { VC.store.set('settings', Object.assign(this.get(), patch)); }
   };
 
   function withMargin(offer) {

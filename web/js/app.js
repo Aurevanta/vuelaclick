@@ -7,12 +7,10 @@
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
 
   var moneyFmt = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, useGrouping: 'always' });
-  var centsFmt = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: 'always' });
   var dayFmt = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
   var longDayFmt = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
   function money(n) { return moneyFmt.format(n); }
-  function cents(n) { return centsFmt.format(n); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function icon(id) { return '<svg class="ic" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
 
@@ -759,11 +757,6 @@
     return html;
   }
 
-  function finText(price) {
-    if (!VC.settings.canFinance(price)) return '';
-    return 'o 100 € hoy y 6 cuotas de ' + cents((price - 100) / 6);
-  }
-
   function renderOffers() {
     var all = currentOffers();
     var list = applyFilters(all);
@@ -810,7 +803,6 @@
       if (o.seatsLeft <= 4) tags += '<span class="tag tag-seats">' + (o.seatsLeft === 1 ? 'Queda 1 plaza' : 'Quedan ' + o.seatsLeft + ' plazas') + '</span>';
       var isSel = selected && selected.id === o.id;
       var open = search.open[o.id];
-      var fin = finText(o.price);
       return '<li class="offer' + (isSel ? ' is-selected' : '') + '" style="--i:' + Math.min(i, 8) + '" data-id="' + esc(o.id) + '">' +
         '<div class="offer-main">' +
           '<div class="offer-top">' + logo(o.airline) + '<span class="al-name">' + esc(al.name) + '</span>' + tags + '</div>' +
@@ -827,7 +819,6 @@
         '<div class="offer-stub">' +
           '<div class="offer-price">' + money(o.price) + '</div>' +
           '<div class="offer-per">' + (onlyOne ? 'Precio final con tasas' : money(o.pricePerAdult) + ' por adulto') + '</div>' +
-          (fin ? '<div class="offer-fin">' + fin + '</div>' : '') +
           '<button type="button" class="btn ' + (isSel ? 'btn-ghost' : 'btn-sun') + '" data-act="pick">' + (isSel ? icon('check') + 'Elegido' : 'Elegir') + '</button>' +
         '</div>' +
         (open ? '<div class="offer-details">' + detailsHtml(o) + '</div>' : '') +
@@ -989,8 +980,7 @@
       get total() { return this.base + VC.seats.total(this); },
       travellers: [],
       contact: { email: '', phone: '' },
-      method: 'card',
-      plan: 6
+      method: 'card'
     };
     var types = [];
     for (var a = 0; a < booking.pax.adt; a++) types.push('adt');
@@ -1101,16 +1091,13 @@
     } else if (s === 3) {
       // la agencia activa o desactiva formas de pago desde su panel
       var cfg = VC.settings.get();
-      var allowed = ['card', 'bizum', 'transfer', 'fin'].filter(function (m) {
-        return m === 'fin' ? VC.settings.canFinance(booking.total) : cfg.pay[m];
-      });
+      var allowed = ['card', 'bizum', 'transfer'].filter(function (m) { return cfg.pay[m]; });
       if (!allowed.length) allowed = ['card'];
       if (allowed.indexOf(booking.method) < 0) booking.method = allowed[0];
       var opts = {
         card: ['card', 'Tarjeta', 'Visa, Mastercard o Amex'],
         bizum: ['phone', 'Bizum', 'Al momento desde tu móvil'],
-        transfer: ['bank', 'Transferencia', 'Plaza bloqueada 24 h'],
-        fin: ['split', 'Financiación', '100 € hoy y el resto en cuotas']
+        transfer: ['bank', 'Transferencia', 'Plaza bloqueada 24 h']
       };
       body.innerHTML = '<h3>¿Cómo quieres pagar?</h3>' + priceLines() +
         '<div class="pay-methods" role="radiogroup" aria-label="Forma de pago">' +
@@ -1127,7 +1114,7 @@
       body.innerHTML = '<h3>Estamos emitiendo tu billete</h3>' +
         '<ol class="flow" id="flow">' +
           flowStep(booking.method === 'transfer' ? 'Plaza bloqueada a la espera de tu transferencia' : 'Pago recibido por VuelaClic',
-            booking.method === 'fin' ? 'Entrada de 100 € y plan de ' + booking.plan + ' cuotas aprobado' : 'Importe: ' + money(booking.total)) +
+            'Importe: ' + money(booking.total)) +
           flowStep('Reserva confirmada en GrupoVDT', 'La aerolínea guarda tus plazas') +
           flowStep('VuelaClic paga el billete a GrupoVDT', 'Con el crédito de agencia de VuelaClic') +
           flowStep('Billete emitido y enviado', 'A ' + (booking.contact.email || 'tu email') + ' y por WhatsApp') +
@@ -1161,18 +1148,9 @@
       box.innerHTML = '<label class="inp">Móvil con Bizum<input type="tel" id="bizum-phone" value="' + esc(booking.contact.phone) + '"></label>' +
         '<p class="fine">Te llegará una solicitud de pago a la app de tu banco.</p>';
       payBtn.textContent = 'Pedir ' + money(booking.total) + ' por Bizum';
-    } else if (m === 'transfer') {
+    } else {
       box.innerHTML = '<p>Te enviamos el número de cuenta por email. Guardamos tu plaza 24 horas y emitimos el billete cuando llegue la transferencia.</p>';
       payBtn.textContent = 'Bloquear plaza';
-    } else {
-      var rest = booking.total - 100;
-      box.innerHTML = '<div class="calc-plans" role="radiogroup" aria-label="Número de cuotas">' + [3, 6, 12].map(function (n) {
-          return '<label><input type="radio" name="plan" value="' + n + '"' + (booking.plan === n ? ' checked' : '') + '><span>' + n + ' cuotas</span></label>';
-        }).join('') + '</div>' +
-        '<div class="calc-result"><div><small>Hoy pagas</small><strong>100 €</strong></div>' +
-        '<div><small>Y luego, cada mes</small><strong>' + cents(rest / booking.plan) + '</strong></div></div>' +
-        '<p class="fine">Financiación de Fliinow sin intereses, sujeta a aprobación con tu DNI o NIE.</p>';
-      payBtn.textContent = 'Pagar 100 € y financiar';
     }
   }
 
@@ -1198,7 +1176,6 @@
       cabin: booking.cabin,
       contact: booking.contact,
       method: booking.method,
-      plan: booking.method === 'fin' ? booking.plan : null,
       total: booking.total,
       seatsTotal: seatsTotal,
       net: net,
@@ -1287,7 +1264,7 @@
         '<div><small>Salida</small><strong>' + shortDay(first.date) + ', ' + clock(o.depMin) + '</strong></div>' +
         '<div><small>Vuelo</small><strong>' + o.segments[0].number + '</strong></div>' +
         '<div><small>Asiento</small><strong>' + (seat || 'Al facturar') + '</strong></div>' +
-        '<div><small>Pagado</small><strong>' + (booking.method === 'fin' ? '100 €' : booking.method === 'transfer' ? 'Pendiente' : money(booking.total)) + '</strong></div>' +
+        '<div><small>Pagado</small><strong>' + (booking.method === 'transfer' ? 'Pendiente' : money(booking.total)) + '</strong></div>' +
         (qr && booking.method !== 'transfer' ? '<div class="ticket-qr" aria-label="Código QR de la tarjeta de embarque">' + qr + '</div>' : '') +
       '</div></div>' +
       '<div class="ticket-share">' +
@@ -1357,7 +1334,6 @@
       var t = e.target;
       if (t.dataset.i !== undefined) booking.travellers[+t.dataset.i][t.name] = t.value;
       if (t.name === 'pay') { booking.method = t.value; renderPayExtra(); }
-      if (t.name === 'plan') { booking.plan = +t.value; renderPayExtra(); }
       if (t.id === 'terms-ok') { booking.terms = t.checked; if (t.checked) $('#terms-error').hidden = true; }
     });
     dlg.addEventListener('submit', function (e) {
@@ -1428,21 +1404,6 @@
       renderLegs();
       runSearch();
     });
-  }
-
-  // ---------- Financiación ----------
-  function bindCalc() {
-    var range = $('#calc-price');
-    function update() {
-      var price = +range.value;
-      var plan = +$('input[name=calc-plan]:checked').value;
-      $('#calc-price-out').textContent = money(price);
-      rollMoney($('#calc-monthly'), (price - 100) / plan, cents);
-      range.style.setProperty('--p', ((price - range.min) / (range.max - range.min) * 100) + '%');
-    }
-    range.addEventListener('input', update);
-    $$('input[name=calc-plan]').forEach(function (r) { r.addEventListener('change', update); });
-    update();
   }
 
   function renderMarquee() {
@@ -1552,8 +1513,6 @@
   // ---------- Aviso publicado desde el panel ----------
   function renderNotice() {
     var s = VC.settings.get();
-    // sin financiación, se ocultan todos los mensajes de cuotas de la portada
-    document.body.classList.toggle('no-fin', !s.pay.fin);
     var on = s.noticeOn && s.notice.trim();
     $('#site-notice').hidden = !on;
     if (on) $('#site-notice-text').textContent = s.notice.trim();
@@ -1615,6 +1574,5 @@
   bindBooking();
   startBoard();
   renderDestinations();
-  bindCalc();
   renderMarquee();
 })();

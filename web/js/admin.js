@@ -26,8 +26,8 @@
     'Lourdes Acosta', 'Franklin Herrera', 'Natalia Cabrera', 'Edwin Ramírez', 'Silvia Gutiérrez', 'Ronald Peralta'];
   var ROUTES = [['MAD', 'LIM'], ['MAD', 'LIM'], ['MAD', 'BOG'], ['BCN', 'LIM'], ['MAD', 'SDQ'], ['MAD', 'UIO'], ['MAD', 'ASU'],
     ['MAD', 'VVI'], ['MAD', 'TGU'], ['MAD', 'GYE'], ['BCN', 'BOG'], ['MAD', 'SJO'], ['MAD', 'EZE'], ['AGP', 'LIM'], ['MAD', 'CUZ']];
-  var METHODS = ['card', 'card', 'card', 'bizum', 'bizum', 'fin', 'fin', 'fin', 'transfer'];
-  var METHOD_LABEL = { card: 'Tarjeta', bizum: 'Bizum', transfer: 'Transferencia', fin: 'Fliinow' };
+  var METHODS = ['card', 'card', 'card', 'bizum', 'bizum', 'card', 'bizum', 'card', 'transfer'];
+  var METHOD_LABEL = { card: 'Tarjeta', bizum: 'Bizum', transfer: 'Transferencia' };
   var TYPE_LABEL = { adt: 'Adulto', chd: 'Niño', inf: 'Bebé' };
 
   function rng(seed) {
@@ -88,7 +88,6 @@
           { from: route[1], to: route[0], date: iso(ret), airline: o2.airline, number: o2.segments[0].number, dep: clock(o2.depMin) }
         ],
         method: method,
-        plan: method === 'fin' ? [3, 6, 12][Math.floor(r() * 3)] : null,
         total: total,
         net: net,
         margin: total - net,
@@ -141,13 +140,11 @@
     var margin = sold.reduce(function (s, b) { return s + b.margin; }, 0);
     var owed = list.filter(function (b) { return b.status === 'issued' && !b.settled; }).reduce(function (s, b) { return s + b.net; }, 0);
     var awaiting = list.filter(function (b) { return b.status === 'awaiting'; });
-    var fin = sold.filter(function (b) { return b.method === 'fin'; }).reduce(function (s, b) { return s + b.total; }, 0);
     var cards = [
       { label: 'Ventas, 30 días', value: money.format(sales), note: sold.length + ' billetes emitidos' },
       { label: 'Tu margen', value: money.format(margin), note: sales ? (margin / sales * 100).toFixed(1).replace('.', ',') + ' % de lo vendido' : '', tone: 'tone-sun' },
       { label: 'Debes a GrupoVDT', value: money.format(owed), note: 'Billetes emitidos sin liquidar', tone: 'tone-night' },
-      { label: 'Por cobrar', value: money.format(awaiting.reduce(function (s, b) { return s + b.total; }, 0)), note: awaiting.length === 1 ? '1 transferencia pendiente' : awaiting.length + ' transferencias pendientes' },
-      { label: 'Financiado con Fliinow', value: money.format(fin), note: 'Fliinow te lo abona en 48 h' }
+      { label: 'Por cobrar', value: money.format(awaiting.reduce(function (s, b) { return s + b.total; }, 0)), note: awaiting.length === 1 ? '1 transferencia pendiente' : awaiting.length + ' transferencias pendientes' }
     ];
     $('#kpis').innerHTML = cards.map(function (c) {
       return '<div class="kpi' + (c.tone ? ' ' + c.tone : '') + '"><small>' + c.label + '</small><strong>' + c.value + '</strong><span>' + c.note + '</span></div>';
@@ -216,7 +213,7 @@
   }
 
   function payChip(b) {
-    return '<span class="pay pay-' + b.method + '">' + METHOD_LABEL[b.method] + (b.plan ? ', ' + b.plan + ' cuotas' : '') + '</span>';
+    return '<span class="pay pay-' + b.method + '">' + (METHOD_LABEL[b.method] || '') + '</span>';
   }
 
   function trip(b) {
@@ -231,7 +228,6 @@
     var q = $('#bk-q').value.trim().toLowerCase();
     var rows = list.filter(function (b) {
       if (filter === 'awaiting' && b.status !== 'awaiting') return false;
-      if (filter === 'fin' && b.method !== 'fin') return false;
       if (filter === 'web' && b.source !== 'web') return false;
       var email = b.contact ? b.contact.email.toLowerCase() : '';
       if (q && b.lead.toLowerCase().indexOf(q) < 0 && b.locator.toLowerCase().indexOf(q) < 0 && email.indexOf(q) < 0) return false;
@@ -378,12 +374,11 @@
   // ---------- Ajustes de la web ----------
   function renderSettings() {
     var s = VC.settings.get();
-    var labels = { card: ['Tarjeta', 'Pasarela del banco'], bizum: ['Bizum', 'Solicitud al móvil'], transfer: ['Transferencia', 'Plaza bloqueada 24 h'], fin: ['Financiación', 'Fliinow, 3 a 12 cuotas'] };
+    var labels = { card: ['Tarjeta', 'Pasarela del banco'], bizum: ['Bizum', 'Solicitud al móvil'], transfer: ['Transferencia', 'Plaza bloqueada 24 h'] };
     $('#pay-switches').innerHTML = Object.keys(labels).map(function (k) {
       return '<label class="switch"><input type="checkbox" data-pay="' + k + '"' + (s.pay[k] ? ' checked' : '') + '><span class="switch-ui" aria-hidden="true"></span>' +
         '<span><strong>' + labels[k][0] + '</strong><small>' + labels[k][1] + '</small></span></label>';
     }).join('');
-    $('#fin-min').value = s.finMin;
     $('#notice-on').checked = s.noticeOn;
     $('#notice-text').value = s.notice;
     renderPreview();
@@ -535,19 +530,13 @@
       if (!k) return;
       var s = VC.settings.get();
       s.pay[k] = e.target.checked;
-      if (!Object.keys(s.pay).some(function (m) { return s.pay[m]; })) {
+      if (!['card', 'bizum', 'transfer'].some(function (m) { return s.pay[m]; })) {
         e.target.checked = true;
         toast('Deja al menos una forma de pago activa.');
         return;
       }
       VC.settings.set({ pay: s.pay });
       toast(e.target.closest('label').querySelector('strong').textContent + (e.target.checked ? ' activada en la web.' : ' desactivada en la web.'));
-    });
-    $('#fin-min').addEventListener('change', function () {
-      var v = Math.max(100, Math.min(2000, Math.round(+this.value / 50) * 50 || 300));
-      this.value = v;
-      VC.settings.set({ finMin: v });
-      toast('La financiación se ofrece desde ' + money.format(v) + '.');
     });
     $('#notice-text').addEventListener('input', renderPreview);
     $('#notice-on').addEventListener('change', renderPreview);

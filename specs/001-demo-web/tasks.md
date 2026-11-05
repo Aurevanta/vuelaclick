@@ -38,4 +38,5 @@ Reconstruidas desde el historial de la rama `miguel` al pasar a SDD (31/10/2026)
 - [X] T050 Auditoría completa: 20 hallazgos en [`docs/auditoria`](../../docs/auditoria/audit-report.md)
 - [X] T051 Arreglos de la demo (lotes 1 y 2): foco, contraste, financiación según el panel, cabeceras, favicon, README fuera de `web/` (NFR-01, NFR-03, FR-05) · `fdae5a5`
 - [ ] T052 Lote 3 de la auditoría (calidad): fuentes en local, imágenes WebP con `srcset`, pestañas con flechas, `js/utils.js` común y logo en un solo archivo (F-0010, F-0016–F-0019)
+- [X] T054 Quitar la financiación y Fliinow de la web, el panel y los textos legales: la agencia no la ofrecerá (FR-05, FR-12, FR-35, FR-40)
 - [ ] T053 Que el usuario publique en producción el último borrador de Netlify (Art. XI)

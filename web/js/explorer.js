@@ -9,11 +9,7 @@
   };
   var LON0 = -125, LON1 = 5, LAT0 = 50, LAT1 = -57, K = 7;
   var W = (LON1 - LON0) * K, H = (LAT0 - LAT1) * K;
-  var MODES = {
-    total: { min: 300, max: 2000, step: 25, value: 700 },
-    month: { min: 30, max: 200, step: 5, value: 50 }
-  };
-  var state = { origin: 'MAD', mode: 'total', budget: { total: 700, month: 50 }, prices: {} };
+  var state = { origin: 'MAD', budget: 700, prices: {} };
   var money = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, useGrouping: 'always' });
 
   function x(lon) { return (lon - LON0) * K; }
@@ -97,23 +93,19 @@
     });
   }
 
-  function monthly(price) { return (price - 100) / 12; }
-  function fits(p) {
-    return state.mode === 'total' ? p.price <= state.budget.total : VC.settings.canFinance(p.price) && monthly(p.price) <= state.budget.month;
-  }
+  function fits(p) { return p.price <= state.budget; }
 
   function render() {
     var prices = state.prices[state.origin];
     if (!prices) return;
-    var b = state.budget[state.mode];
-    document.getElementById('ex-amount').textContent = money.format(b) + (state.mode === 'month' ? ' al mes' : '');
+    document.getElementById('ex-amount').textContent = money.format(state.budget);
     var ok = [];
     DESTS.forEach(function (c) {
       var p = prices[c], yes = fits(p);
       if (yes) ok.push(p);
       var dot = document.querySelector('.ex-dot[data-code="' + c + '"]');
       dot.classList.toggle('is-on', yes);
-      dot.querySelector('.ex-price').textContent = state.mode === 'total' ? money.format(p.price) : Math.ceil(monthly(p.price)) + ' €/mes';
+      dot.querySelector('.ex-price').textContent = money.format(p.price);
       dot.setAttribute('aria-label', VC.airport(c).city + ', ' + money.format(p.price) + ' ida y vuelta' + (yes ? '' : ', fuera de presupuesto'));
       document.querySelector('.ex-arc[data-code="' + c + '"]').classList.toggle('is-on', yes);
     });
@@ -121,30 +113,12 @@
     var count = document.getElementById('ex-count');
     count.textContent = ok.length
       ? (ok.length === 1 ? 'Te llega para 1 destino.' : 'Te llega para ' + ok.length + ' destinos.')
-      : 'Todavía no llega para ningún destino. Sube un poco el presupuesto' + (state.mode === 'total' && VC.settings.finOn ? ' o prueba a pagarlo en cuotas.' : '.');
+      : 'Todavía no llega para ningún destino. Sube un poco el presupuesto' + '.';
     document.getElementById('ex-list').innerHTML = ok.slice(0, 5).map(function (p) {
       var a = VC.airport(p.code);
       return '<li><button type="button" data-code="' + p.code + '"><span><strong>' + a.city + '</strong><small>' + a.country + '</small></span>' +
-        '<span class="ex-li-price">' + (state.mode === 'total'
-          ? money.format(p.price)
-          : '100 € + 12 × ' + money.format(Math.ceil(monthly(p.price)))) + '</span></button></li>';
+        '<span class="ex-li-price">' + money.format(p.price) + '</span></button></li>';
     }).join('');
-  }
-
-  function setMode(mode) {
-    // si la agencia ha desactivado la financiación, no hay modo «cuota al mes»
-    if (mode === 'month' && !VC.settings.finOn) {
-      mode = 'total';
-      document.querySelector('input[name=ex-mode][value=total]').checked = true;
-    }
-    state.mode = mode;
-    var r = document.getElementById('ex-budget'), m = MODES[mode];
-    r.min = m.min; r.max = m.max; r.step = m.step; r.value = state.budget[mode];
-    r.setAttribute('aria-label', mode === 'total' ? 'Presupuesto total por persona' : 'Cuota mensual');
-    document.getElementById('ex-hint').textContent = mode === 'total'
-      ? 'Por persona, ida y vuelta, el día más barato de las próximas 8 semanas.'
-      : 'Pagando 100 € al reservar y el resto en 12 cuotas sin intereses.';
-    render();
   }
 
   function pick(code) {
@@ -156,14 +130,11 @@
     var section = document.getElementById('explora');
     if (!section || !window.VC_COUNTRIES) return;
     build();
-    loadPrices().then(function () { setMode(state.mode); });
+    loadPrices().then(render);
 
     document.getElementById('ex-budget').addEventListener('input', function () {
-      state.budget[state.mode] = +this.value;
+      state.budget = +this.value;
       render();
-    });
-    section.querySelectorAll('input[name=ex-mode]').forEach(function (r) {
-      r.addEventListener('change', function () { setMode(r.value); });
     });
     document.getElementById('ex-origin').addEventListener('change', function () {
       state.origin = this.value;

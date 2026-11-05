@@ -19,7 +19,7 @@
 .adm-title-row p { color: var(--muted); font-weight: 600; }
 .adm-title-row p::first-letter { text-transform: uppercase; }
 
-.kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .kpi { background: #fff; border-radius: 18px; padding: 16px 18px; display: grid; gap: 4px; box-shadow: var(--shadow-soft); }
 .kpi small { color: var(--muted); font-weight: 700; font-size: 13px; }
 .kpi strong { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--display); color: var(--night); font-variant-numeric: tabular-nums; }
@@ -95,7 +95,6 @@
 .chip.ghost { background: var(--cloud); color: var(--muted); }
 .chip.web { background: var(--sun); color: var(--night); font-size: 11px; padding: 1px 7px; vertical-align: 1px; }
 .pay { font-weight: 700; font-size: 13.5px; white-space: nowrap; }
-.pay-fin { color: #6B3FD6; }
 .pay-bizum { color: #0A8E8E; }
 .pay-transfer { color: #7A5200; }
 .btn-sm { padding: .55em 1em; font-size: 13.5px; box-shadow: 0 4px 0 -1px var(--sun-deep); }
@@ -181,7 +180,6 @@
 .switch input:checked + .switch-ui { background: var(--cheap); }
 .switch input:checked + .switch-ui::after { transform: translateX(18px); }
 .switch input:focus-visible + .switch-ui { outline: 3px solid var(--sun); outline-offset: 2px; }
-.fin-min { max-width: 220px; }
 .suffix-wrap { position: relative; display: block; }
 .suffix-wrap input { padding-right: 34px; }
 .suffix-wrap span { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 700; }

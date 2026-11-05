@@ -128,7 +128,6 @@
         <div class="bk-tabs" role="tablist" id="bk-tabs">
           <button type="button" role="tab" data-f="all" aria-selected="true">Todas</button>
           <button type="button" role="tab" data-f="awaiting" aria-selected="false">Por cobrar</button>
-          <button type="button" role="tab" data-f="fin" aria-selected="false">Financiadas</button>
           <button type="button" role="tab" data-f="web" aria-selected="false">Hechas en la web</button>
         </div>
         <label class="bk-search"><svg class="ic"><use href="#i-search"/></svg><span class="sr-only">Buscar reserva</span>
@@ -181,8 +180,6 @@
       <header class="card-head"><h2 id="pay-title">Formas de pago en la web</h2></header>
       <p class="card-sub">Lo que desactives deja de aparecer al instante en el último paso de la reserva.</p>
       <div class="switches" id="pay-switches"></div>
-      <label class="inp fin-min">Financiar a partir de
-        <span class="suffix-wrap"><input type="number" id="fin-min" min="100" max="2000" step="50"><span>€</span></span></label>
     </article>
     <article class="card" aria-labelledby="notice-title">
       <header class="card-head"><h2 id="notice-title">Aviso en la web</h2></header>
@@ -197,7 +194,7 @@
     </article>
   </section>
 
-  <p class="adm-foot fine">Demo con datos simulados. En producción estos datos vendrían del backend que conecta con GrupoVDT, la pasarela de pago y Fliinow.
+  <p class="adm-foot fine">Demo con datos simulados. En producción estos datos vendrían del backend que conecta con GrupoVDT y la pasarela de pago.
     <button type="button" class="link" id="reset-demo">Reiniciar demo</button></p>
 </main>
 

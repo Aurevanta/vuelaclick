@@ -14,7 +14,6 @@ vivir en el navegador: credenciales, cobro, emisión y datos de clientes.
 Navegador (web/, estática, Netlify) ──HTTPS──▶ API de VuelaClic (servidor propio)
                                                  ├─ GrupoVDT (API de vuelos)
                                                  ├─ Redsys (tarjeta y Bizum) ◀── notificación del banco
-                                                 ├─ Fliinow (financiación)
                                                  ├─ Correo saliente (SMTP)
                                                  └─ Base de datos (cuentas, reservas, ajustes)
 ```
@@ -53,7 +52,7 @@ Solo `pagada` permite emitir (Art. I).
 
 1. **Semana 1 — Base:** servidor, base de datos, cuentas y panel con sesión segura.
 2. **Semanas 2–3 — GrupoVDT:** adaptador, búsqueda, calendario, reprecio, reserva y emisión en pruebas.
-3. **Semana 4 — Pagos:** Redsys (tarjeta y Bizum) con notificación, transferencia y Fliinow en pruebas.
+3. **Semana 4 — Pagos:** Redsys (tarjeta y Bizum) con notificación y transferencia en pruebas.
 4. **Semana 5 — Publicación:** pruebas con el cliente, accesos reales, quitar lo de demo y publicar.
 
 ## Cumplimiento de la constitución

@@ -30,11 +30,11 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 3. Enseñar el calendario de precios, los filtros y Recomendado / Más barato / Más rápido.
 4. Elegir ida y vuelta → Continuar → «Rellenar con datos de prueba».
 5. **Asientos.** Elegir ventanilla para uno y salida de emergencia para otro.
-6. Pagar con **Financiación**. El final muestra el flujo de cobro que pidió el cliente
+6. Pagar con **Tarjeta**. El final muestra el flujo de cobro que pidió el cliente
    (VuelaClic cobra → reserva en GrupoVDT → VuelaClic paga a VDT → billete emitido)
    y el billete con QR, envío por WhatsApp y alta en el calendario.
-7. **Explorador.** Bajar a «¿A dónde puedo ir con 700 €?», mover la barra y cambiar
-   a «Cuota al mes»: se iluminan los destinos que caben en el presupuesto.
+7. **Explorador.** Bajar a «¿A dónde puedo ir con 700 €?», mover la barra:
+   se iluminan los destinos que caben en el presupuesto.
 8. **Panel del agente.** Abrir «Acceso agencia» (pie de página): la reserva recién
    hecha aparece arriba con la etiqueta «Web». Enseñar el margen ganado, lo que se
    debe a GrupoVDT, «Confirmar cobro» de una transferencia y «Pagar a GrupoVDT».
@@ -58,19 +58,19 @@ Antes de empezar: abrir `admin.html` y pulsar «Reiniciar demo» al pie de la p�
 | Globo 3D con la ruta y las escalas | Resultados |
 | Calendario de precios, filtros, ordenación, presupuesto | Resultados |
 | Plano de asientos por vuelo y viajero | Reserva |
-| Pago con tarjeta, Bizum, transferencia o Fliinow (simulado) | Reserva |
+| Pago con tarjeta, Bizum o transferencia (simulado) | Reserva |
 | Billete con QR, envío por WhatsApp y archivo de calendario | Reserva |
-| Mapa «¿A dónde puedo ir con X €?» en precio total o cuota mensual | Portada |
+| Mapa «¿A dónde puedo ir con X €?» | Portada |
 | Modo noche (luna y estrellas en el cielo) | Botón de la cabecera |
 | Cielo según la hora del visitante (amanecer 6–9 h, día, atardecer 18–21 h, noche). Para enseñarlo en la demo: `?cielo=amanecer`, `?cielo=atardecer` o `?cielo=noche` | Portada |
 | Ruta de vuelo que avanza con el scroll (CSS scroll-driven animations): margen derecho desde 1360 px, línea bajo la cabecera en pantallas menores | Toda la portada |
 | La tarjeta elegida se transforma en la ventana de reserva (View Transitions API) | Botón «Continuar» |
-| Totales que ruedan al cambiar y sello «EMITIDO» en el billete | Barra de selección, reserva, calculadora |
+| Totales que ruedan al cambiar y sello «EMITIDO» en el billete | Barra de selección y reserva |
 | Aviso legal, condiciones de contratación, privacidad y cookies (borrador: los datos en amarillo están por completar y debe revisarlo un abogado) | `legal.html`, enlazada en el pie, el registro y el paso de pago |
 | Registro, acceso, «Mis viajes», datos y viajeros guardados | Botón «Entrar» de la cabecera |
 | Panel del agente: ventas, margen, deuda con VDT, cobros pendientes | `admin.html` |
 | Panel: acceso, ficha de reserva, cancelar y reembolsar, clientes, exportar CSV | `admin.html` |
-| Panel: formas de pago de la web, importe mínimo para financiar, aviso en la web | `admin.html`, «Ajustes» |
+| Panel: formas de pago de la web y aviso en la web | `admin.html`, «Ajustes» |
 
 ### Usuarios del panel
 
@@ -134,8 +134,8 @@ navegador) que exponga:
 
 ### Flujo de cobro
 
-El viajero paga a VuelaClic (pasarela del banco, Bizum, transferencia o
-Fliinow). Solo cuando el cobro está confirmado, el backend confirma la reserva
+El viajero paga a VuelaClic (pasarela del banco, Bizum o transferencia).
+Solo cuando el cobro está confirmado, el backend confirma la reserva
 en GrupoVDT y la paga con el crédito de agencia de VuelaClic. Así VuelaClic
 nunca adelanta dinero por una reserva que el cliente no ha pagado.
 
@@ -145,7 +145,6 @@ desde el panel. En producción lo aplicará el backend, para que nadie pueda toc
 Antes de producción quedan por decidir:
 
 - Pasarela de pago con tarjeta (Redsys u otra) y alta de Bizum para comercios.
-- Acuerdo con Fliinow para la financiación.
 - Margen o cargo de gestión de VuelaClic sobre la tarifa neta de VDT.
 - Textos legales: aviso legal, privacidad, condiciones de venta (agencia con
   título-licencia de la comunidad autónoma).

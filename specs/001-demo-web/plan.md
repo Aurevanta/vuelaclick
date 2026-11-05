@@ -38,8 +38,7 @@ Todo cuelga del espacio de nombres `VC`. Las pantallas solo llaman a `VC.api`, a
 - **Simulador determinista** (semilla por búsqueda): la misma búsqueda da las mismas ofertas, para que
   las demos sean repetibles.
 - **Margen aplicado en `api.js`** sobre el neto del proveedor (`withMargin`), no en la interfaz (Art. III).
-- **`VC.settings` como única fuente** de formas de pago, mínimo de financiación y aviso; `canFinance()`
-  decide en toda la web (corrige el hallazgo F-0008 de la auditoría).
+- **`VC.settings` como única fuente** de formas de pago y aviso.
 - **Seguridad de la demo:** el panel comprueba la contraseña con SHA-256 y sal fija en el navegador.
   Es solo para enseñar; la autenticación real va en el backend (spec 002, Art. IV).
 - **Movimiento:** CSS scroll-driven animations y `offset-path` para la ruta, View Transitions API para la

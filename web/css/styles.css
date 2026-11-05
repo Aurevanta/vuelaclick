@@ -211,7 +211,7 @@ a { color: inherit; }
   box-shadow: var(--shadow-lift), 0 0 0 1px rgba(10, 36, 99, .04);
 }
 .trip-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--cloud); margin-bottom: 18px; }
-.trip-tabs input, .cabin-pick input, .calc-plans input, .chip-grid input, .pay-methods input { position: absolute; opacity: 0; pointer-events: none; }
+.trip-tabs input, .cabin-pick input, .chip-grid input, .pay-methods input { position: absolute; opacity: 0; pointer-events: none; }
 .trip-tabs span { display: block; padding: 9px 18px; border-radius: 999px; font-weight: 700; font-size: 15px; color: var(--muted); cursor: var(--cursor-hand); transition: background-color .2s, color .2s; }
 .trip-tabs input:checked + span { background: var(--pick); color: #fff; }
 .trip-tabs input:focus-visible + span { outline: 3px solid var(--sun); }
@@ -285,9 +285,9 @@ a { color: inherit; }
 .stepper output { min-width: 1.5ch; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
 .cabin-pick { border: 0; padding: 14px 0 6px; margin: 0; display: flex; gap: 6px; flex-wrap: wrap; }
 .cabin-pick legend { font-weight: 700; padding: 0 0 8px; }
-.cabin-pick span, .calc-plans span { display: block; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--line); font-weight: 600; font-size: 14px; cursor: var(--cursor-hand); }
-.cabin-pick input:checked + span, .calc-plans input:checked + span { background: var(--pick); border-color: var(--pick); color: #fff; }
-.cabin-pick input:focus-visible + span, .calc-plans input:focus-visible + span { outline: 3px solid var(--sun); }
+.cabin-pick span { display: block; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--line); font-weight: 600; font-size: 14px; cursor: var(--cursor-hand); }
+.cabin-pick input:checked + span { background: var(--pick); border-color: var(--pick); color: #fff; }
+.cabin-pick input:focus-visible + span { outline: 3px solid var(--sun); }
 .pax-done { width: 100%; margin-top: 12px; }
 .form-error { margin-top: 12px; color: var(--dear); font-weight: 600; }
 
@@ -416,7 +416,6 @@ a { color: inherit; }
 }
 .offer-price { font: 800 clamp(28px, 2.6vw, 34px)/1 var(--display); color: var(--strong); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 .offer-per { font-size: 13.5px; color: var(--muted); }
-.offer-fin { font-size: 13.5px; font-weight: 700; color: #0B7A50; }
 .offer-stub .btn { margin-top: 6px; width: 100%; }
 
 .offer-details { grid-column: 1 / -1; border-top: 1px dashed var(--line); padding: 16px 22px 20px; display: grid; gap: 4px; font-size: 14.5px; }
@@ -468,29 +467,9 @@ a { color: inherit; }
 .dest-price { position: absolute; top: 14px; right: 14px; padding: 8px 12px; border-radius: 14px; background: var(--sun); color: var(--night); font: 800 18px/1 var(--display); text-align: right; box-shadow: 0 8px 18px -8px rgba(0, 0, 0, .5); }
 .dest-price small { display: block; font: 700 11px/1.3 var(--text); }
 
-.finance { padding: clamp(64px, 8vw, 110px) 0; }
-.finance-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 72px); align-items: center;
-  background: var(--night); color: #fff; border-radius: 32px; padding: clamp(28px, 5vw, 64px);
-  background-image: radial-gradient(600px 300px at 0% 100%, rgba(41, 181, 242, .35), transparent 70%);
-}
-.finance-copy h2 { font-size: clamp(30px, 4vw, 48px); font-weight: 800; }
-.finance-copy p { margin-top: 16px; color: rgba(255, 255, 255, .82); font-size: 17px; max-width: 46ch; }
-.finance-points { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; font-weight: 600; }
-.finance-points li { display: flex; align-items: center; gap: 10px; }
-.finance-points .ic { color: var(--sun); }
-.calc { background: var(--card); color: var(--ink); border-radius: 24px; padding: 26px; display: grid; gap: 14px; }
-.calc-label { font-weight: 700; color: var(--muted); }
-.calc-price { font: 800 44px/1 var(--display); color: var(--strong); font-variant-numeric: tabular-nums; }
-.calc input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
-.calc-plans { display: flex; gap: 8px; flex-wrap: wrap; }
-.calc-result { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.calc-result div { padding: 14px 16px; border-radius: 16px; background: var(--cloud); }
-.calc-result small { display: block; color: var(--muted); font-weight: 600; font-size: 13.5px; }
-.calc-result strong { font: 800 26px/1.15 var(--display); color: var(--strong); font-variant-numeric: tabular-nums; }
 .fine { font-size: 13px; color: var(--muted); }
 
-.how { padding: 24px 0 clamp(64px, 8vw, 100px); }
+.how { padding: clamp(64px, 8vw, 100px) 0; }
 .steps { list-style: none; counter-reset: step; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .steps li { counter-increment: step; position: relative; padding: 26px 24px 24px; border-radius: 22px; background: var(--card); box-shadow: var(--shadow-soft); }
 .steps li::before {
@@ -629,8 +608,8 @@ body.has-selection .toast { bottom: 108px; }
 
 /* ---------- Responsive ---------- */
 /* Las columnas de rejilla pueden encogerse por debajo del ancho de su contenido */
-.hero-grid > *, .results-layout > *, .finance-grid > *, .contact-card > *, .explore-grid > *,
-.form-grid > *, .booking-inner > *, .booking-body > *, .pay-methods > *, .calc-result > * { min-width: 0; }
+.hero-grid > *, .results-layout > *, .contact-card > *, .explore-grid > *,
+.form-grid > *, .booking-inner > *, .booking-body > *, .pay-methods > * { min-width: 0; }
 .inp input, .inp select { width: 100%; min-width: 0; }
 .booking-steps li { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -657,7 +636,7 @@ body.has-selection .toast { bottom: 108px; }
   .filters-toggle { display: inline-flex; margin-bottom: 14px; }
   .dest-grid { grid-template-columns: repeat(2, 1fr); }
   .dest:nth-child(1), .dest:nth-child(6), .dest:nth-child(9) { grid-column: span 2; aspect-ratio: 16 / 9; }
-  .finance-grid, .contact-card { grid-template-columns: 1fr; }
+  .contact-card { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {
   :root { --header-h: 64px; }
@@ -701,10 +680,6 @@ body.has-selection .toast { bottom: 108px; }
   .steps li:not(:last-child)::after { display: none; }
   .form-grid, .pay-methods { grid-template-columns: 1fr; }
   .booking { width: 100%; max-height: 100dvh; height: 100dvh; border-radius: 0; margin: 0; max-width: none; }
-  .finance-grid { padding: 26px 18px; border-radius: 24px; }
-  .calc { padding: 18px; }
-  .calc-price { font-size: 36px; }
-  .calc-result strong { font-size: 22px; }
   .booking-steps li { font-size: 11.5px; }
   .booking-body, .booking-head { padding-inline: 18px; }
   .booking-actions .btn-sun { min-width: 0; flex: 1; }
@@ -787,11 +762,6 @@ body.has-selection .toast { bottom: 108px; }
 .explore h2 output { display: inline-block; color: var(--sun); font-variant-numeric: tabular-nums; }
 .explore-hint { margin-top: 12px; color: rgba(255, 255, 255, .75); }
 .ex-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin: 24px 0 14px; }
-.ex-mode { display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, .1); }
-.ex-mode input { position: absolute; opacity: 0; pointer-events: none; }
-.ex-mode span { display: block; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: var(--cursor-hand); color: rgba(255, 255, 255, .75); }
-.ex-mode input:checked + span { background: var(--sun); color: var(--night); }
-.ex-mode input:focus-visible + span { outline: 3px solid #fff; }
 .ex-origin { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; color: rgba(255, 255, 255, .75); }
 .ex-origin select { padding: 7px 10px; border-radius: 10px; border: 0; background: rgba(255, 255, 255, .12); color: #fff; font-weight: 700; }
 .ex-origin option { color: var(--ink); }
@@ -1043,9 +1013,8 @@ body.has-selection .toast { bottom: 108px; }
 }
 
 /* ======================================================================
-   Ajustes de la auditoría: financiación según el panel y contraste AA
+   Ajustes de la auditoría: contraste AA
    ====================================================================== */
-body.no-fin [data-fin] { display: none !important; }
 /* texto pequeño: verde, rojo y gris con contraste mínimo de 4,5:1 sobre blanco */
 .btn-wa { background: #0F7F43; }
 .btn-wa:hover { background: #0B6B38; }
@@ -1308,12 +1277,11 @@ body.no-fin [data-fin] { display: none !important; }
 :root[data-theme=night] .bag { color: #CFE0FF; }
 :root[data-theme=night] .bag.off { background: #0B173B; color: #3B4F86; }
 :root[data-theme=night] .bag.off::after { background: #3B4F86; }
-:root[data-theme=night] .tag-best, :root[data-theme=night] .offer-fin { color: #4FD49E; }
+:root[data-theme=night] .tag-best { color: #4FD49E; }
 :root[data-theme=night] .tag-cheap { color: var(--sun); }
 :root[data-theme=night] .tag-fast { color: var(--sky); }
 :root[data-theme=night] .tag-seats { color: #FF8A80; }
 :root[data-theme=night] .layover, :root[data-theme=night] .budget-chip { color: #FFD66B; }
-:root[data-theme=night] .finance-grid { background-color: #0C1F5C; box-shadow: inset 0 0 0 1px var(--line); }
 :root[data-theme=night] .explore { background: #050E2C; }
 :root[data-theme=night] .site-footer { background: #030A22; }
 :root[data-theme=night] .selection-bar { background: #050E2C; box-shadow: 0 -1px 0 var(--line), 0 -12px 40px -12px rgba(0, 0, 0, .7); }

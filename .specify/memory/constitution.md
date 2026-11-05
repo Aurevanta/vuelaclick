@@ -5,13 +5,13 @@
 > artículos. Si una decisión los contradice, se cambia la decisión, no la constitución (salvo
 > enmienda explícita, ver §Gobernanza).
 
-**Versión:** 1.0.0 · **Ratificada:** 2026-10-31 · **Última enmienda:** —
+**Versión:** 1.0.1 · **Ratificada:** 2026-10-31 · **Última enmienda:** 2026-11-05 (la web deja de ofrecer financiación; los principios no cambian)
 
 ---
 
 ## Artículo I — El dinero entra en VuelaClic y después va a GrupoVDT
 
-El viajero **siempre** paga a VuelaClic (tarjeta, Bizum, transferencia o financiación) y VuelaClic
+El viajero **siempre** paga a VuelaClic (tarjeta, Bizum o transferencia) y VuelaClic
 confirma y paga la reserva a GrupoVDT con su crédito de agencia. La web nunca envía un pago
 directamente a GrupoVDT ni emite un billete sin cobro confirmado (salvo la transferencia, que solo
 **bloquea** la plaza 24 h). Un flujo que se salte este orden viola este artículo.
@@ -26,14 +26,14 @@ no toque la interfaz. Ninguna pantalla puede depender del simulador ni de GrupoV
 ## Artículo III — El margen y los ajustes de la agencia mandan
 
 El precio de venta es siempre el neto de GrupoVDT más el margen de `VC.pricing`. Lo que la agencia
-decide en su panel (margen, formas de pago, mínimo para financiar, aviso) se lee de una **única
+decide en su panel (margen, formas de pago, aviso) se lee de una **única
 fuente** (`VC.settings`, en producción el backend) y se respeta en **toda** la web: tarjetas,
-explorador, calculadora, portada y pago. Anunciar algo que el panel ha desactivado viola este
+explorador, portada y pago. Anunciar algo que el panel ha desactivado viola este
 artículo.
 
 ## Artículo IV — Sin secretos en el navegador ni en lo publicado
 
-Las credenciales de GrupoVDT, del TPV y de Fliinow viven **solo en el servidor**. En el repositorio
+Las credenciales de GrupoVDT y del TPV viven **solo en el servidor**. En el repositorio
 no hay contraseñas en claro: las del panel van como hash y la real de Juan está en
 `credenciales-panel.md`, ignorado por git. Todo lo que hay en `web/` se publica, así que allí no van
 README, notas internas ni datos de prueba sensibles. Antes de cada commit se comprueba que no viajan
